@@ -1,7 +1,9 @@
-import requests, json
+import requests
+import json
 
 _pm25norm = 25
 _pm10norm = 50
+
 
 class SensorData:
     def __init__(self):
@@ -10,12 +12,13 @@ class SensorData:
 
     def __str__(self):
         _pm10 = self.pm10 if self.pm10 is not None else 0
-        _pm10Percent = "{:.2f}".format((_pm10/_pm10norm * 100))
+        _pm10Percent = "{:.2f}".format((_pm10 / _pm10norm * 100))
 
         _pm25 = self.pm25 if self.pm25 is not None else 0
-        _pm25Percent = "{:.2f}".format((_pm25/_pm25norm * 100))
+        _pm25Percent = "{:.2f}".format((_pm25 / _pm25norm * 100))
 
         return f"PM10: {self.pm10} ({_pm10Percent}%)\nPM2.5: {self.pm25} ({_pm25Percent}%)"
+
 
 class SensorStation:
     def __init__(self, name: str, id: int, type: str):
@@ -25,6 +28,7 @@ class SensorStation:
 
     def __str__(self):
         return f"{self.name} ({self.id})"
+
 
 def get_sensor_community_data(station: SensorStation) -> SensorData:
     print("Getting sensor community data from station %s" % station)
@@ -44,6 +48,7 @@ def get_sensor_community_data(station: SensorStation) -> SensorData:
             sd.pm25 = float(m['value'])
 
     return sd
+
 
 if __name__ == '__main__':
     with open('config.json') as f:

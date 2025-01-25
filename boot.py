@@ -40,11 +40,12 @@
 #
 #    Use the micropython plugin in PyCharm ;)
 
-import utime, mip
+import utime
+import mip
 from machine import reset, WDT
 from sys import exit
+import key_store
 from tone import Melody, Note, tones
-import json
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
 from micropython import alloc_emergency_exception_buf
@@ -57,23 +58,6 @@ print()
 utime.sleep(2)  # A chance to hit Ctrl+C in REPL
 alloc_emergency_exception_buf(100)
 wdt = WDT(timeout=300000)  # 5-minutes for boot.py to finish and move to main.py / wdt.feed() to reset timer
-
-# Load secrets from local key_store.db
-try:
-    import key_store
-except:
-    print('key_store.py module is not present')
-    from sys import exit
-
-    exit(1)
-try:
-    ssid_name = key_store.get('ssid_name')
-    ssid_pass = key_store.get('ssid_pass')
-    if not ssid_name:
-        key_store.init()
-except:
-    key_store.init()
-    reset()
 
 
 # Connect to WiFI
@@ -119,6 +103,7 @@ def no_debug():
     from esp import osdebug
     osdebug(None)
 
+
 def mem_stats():
     from esp import flash_size
     from uos import statvfs
@@ -136,13 +121,15 @@ def mem_stats():
     print('   Free Space   {:5,}KB'.format(int(fs_free / 1024)))
     print('   Used Space   {:5,}KB'.format(int(fs_used / 1024)))
 
+
 def filesystem():
     try:
         from detect_filesystem import check
         print('   File System ', check())
-    except:
+    except ImportError:
         print('detect_filesystem.py module is not present')
         pass
+
 
 def list_files():
     from uos import listdir
@@ -150,6 +137,7 @@ def list_files():
     print("List of files on this device:")
     print('   %s' % '\n   '.join(map(str, sorted(listdir('/')))))
     print()
+
 
 def install_requirements():
     print()
@@ -169,48 +157,33 @@ def install_requirements():
                 print(f"\tFailed to install {line}: {_err}")
         print("done.")
 
-_conf = {}
-try:
-    with open('config.json') as f:
-        _conf = json.load(f)
-    _buzzer_pin = _conf['pins']['buzzer']
-    _volume = _conf['tone']['volume']
-except:
-    print('config.json file is not present')
-    print('defaulting to pin 18 for buzzer')
-    _buzzer_pin = 18
-    _volume = 50
 
-def melody_boot_start(pin: int) -> Melody:
-    melody = Melody(
-        Note(tones['C5'], 0.2),
-        Note(tones['E5'], 0.2),
-        Note(tones['G5'], 0.2)
-    )
-    return melody
+_melody_boot_start = Melody(
+    Note(tones['C5'], 0.2),
+    Note(tones['E5'], 0.2),
+    Note(tones['G5'], 0.2)
+)
 
-def melody_boot_success(pin: int) -> Melody:
-    melody = Melody(
-        Note(tones['G5'], 0.2),
-        Note(tones['E5'], 0.2),
-        Note(tones['C5'], 0.2)
-    )
-    return melody
+_melody_boot_success = Melody(
+    Note(tones['G5'], 0.2),
+    Note(tones['E5'], 0.2),
+    Note(tones['C5'], 0.2)
+)
 
-def melody_boot_failure(pin: int) -> Melody:
-    melody = Melody(
-        Note(tones['C5'], 0.2),
-        Note(tones['FS5'], 0.2),
-        Note(tones['C5'], 0.2)
-    )
-    return melody
-
+_melody_boot_failure = Melody(
+    Note(tones['C5'], 0.2),
+    Note(tones['FS5'], 0.2),
+    Note(tones['C5'], 0.2)
+)
 
 # Run selected functions at boot
 try:
-    melody_boot_start(_buzzer_pin).play()
+    _melody_boot_start.play()
 
     no_debug()
+    ssid_name = key_store.get('ssid_name')
+    ssid_pass = key_store.get('ssid_pass')
+
     wlan_connect(ssid_name, ssid_pass)
     ntp()  # Only needed if using HTTPS or local timestamp data logging
     mem_stats()
@@ -218,7 +191,7 @@ try:
     install_requirements()
     list_files()
 
-    melody_boot_success(_buzzer_pin).play()
+    _melody_boot_success.play()
     # TODO: this can be removed when the loop function in main.py is implemented
     # It will feed the timer then, for now – to avoid the irritating watchdog reset – bump the timer to 1 day
     wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
@@ -227,7 +200,7 @@ except KeyboardInterrupt:
     wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
     exit()
 except Exception as err:
-    melody_boot_failure(_buzzer_pin).play()
+    _melody_boot_failure.play()
     print(f"ERROR: {err}\nResetting Device in 30 seconds")
     utime.sleep(30)  # A chance to hit Ctrl+C in REPL
     reset()

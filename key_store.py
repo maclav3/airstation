@@ -27,12 +27,6 @@ import btree
 
 file = 'key_store.db'
 
-# Check to see if file is on disk
-try:
-    f = open(file, 'r+b')
-except OSError:
-    print('WARNING: No %s on disk' % file)    
-
 
 # Create a new key_store.db database or update config settings
 def init():
@@ -40,17 +34,17 @@ def init():
         f = open(file, 'r+b')
     except OSError:
         f = open(file, 'w+b')
-    db = btree.open(f,pagesize=512)
-    db[b'ssid_name']    = input('Enter WiFi SSID - ')
-    db[b'ssid_pass']    = input('Enter WiFi password - ')
-    db[b'ntp_host']     = 'time.cloudflare.com'
+    db = btree.open(f, pagesize=512)
+    db[b'ssid_name'] = input('Enter WiFi SSID - ')
+    db[b'ssid_pass'] = input('Enter WiFi password - ')
+    db[b'ntp_host'] = 'time.cloudflare.com'
     db.flush()
-    #print("%s, %s, and %s added to %s file" % (db[b'ssid_name'].decode('utf-8'), db[b'ssid_pass'].decode('utf-8'), db[b'mqtt_broker'].decode('utf-8'), file))
+    # print("%s, %s, and %s added to %s file" % (db[b'ssid_name'].decode('utf-8'), db[b'ssid_pass'].decode('utf-8'), db[b'mqtt_broker'].decode('utf-8'), file))
     db.close()
 
 
 # Added new key/value pairs to key_store.db
-def set(key,value):
+def set(key, value):
     f = open(file, 'r+b')
     db = btree.open(f)
     db[key] = value
@@ -88,7 +82,7 @@ def dumptext():
     db.close()
 
 
-# Allows you to download local data: ampy -p /dev/ttyUSB0 get key_store.txt 
+# Allows you to download local data: ampy -p /dev/ttyUSB0 get key_store.txt
 def dumpfile():
     f = open(file, 'r+b')
     db = btree.open(f)
@@ -106,3 +100,10 @@ def wipe():
     uos.remove(file)
     print('%s removed' % file)
 
+
+# Check to see if file is on disk
+try:
+    f = open(file, 'r+b')
+except OSError:
+    print('WARNING: No %s on disk' % file)
+    init()
