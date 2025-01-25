@@ -1,0 +1,4 @@
+micropython-esp32-stubs
+adafruit-ampy
+flake8
+pytest
