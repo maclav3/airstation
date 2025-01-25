@@ -2,6 +2,7 @@
 
 from flashbdev import bdev
 
+
 def check():
     buf = bytearray(16)
     bdev.readblocks(0, buf)
@@ -10,6 +11,7 @@ def check():
     if buf[8:16] == b'littlefs':
         return 'littlefs'
     return 'unknown'
+
 
 def dump(line_count=4, chunk_size=16):
     buf = bytearray(chunk_size)

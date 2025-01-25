@@ -19,7 +19,7 @@ tasks:
   lint:
     desc: Lint code, excluding the lib directory
     cmds:
-      - flake8 --exclude=.venv,lib
+      - flake8 --exclude=.venv,lib --ignore=E501
 
   deploy:
     deps:

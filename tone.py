@@ -2,10 +2,12 @@ from machine import Pin, PWM
 from utime import sleep
 import key_store
 
+
 class Note:
     def __init__(self, freq, duration):
         self.freq = freq
         self.duration = duration
+
 
 class Melody:
     def __init__(self, *notes, **kwargs):
@@ -46,6 +48,7 @@ class Melody:
 
     def reset(self):
         self.melody = []
+
 
 tones = {
     "B0": 31,
