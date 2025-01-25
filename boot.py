@@ -219,15 +219,17 @@ try:
     list_files()
 
     melody_boot_success(_buzzer_pin).play()
-    wdt.feed()
+    # TODO: this can be removed when the loop function in main.py is implemented
+    # It will feed the timer then, for now – to avoid the irritating watchdog reset – bump the timer to 1 day
+    wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
 
 except KeyboardInterrupt:
     wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
     exit()
 except Exception as err:
     melody_boot_failure(_buzzer_pin).play()
-    print(f"ERROR: {err} Resetting Device")
-    utime.sleep(2)  # A chance to hit Ctrl+C in REPL
+    print(f"ERROR: {err}\nResetting Device in 30 seconds")
+    utime.sleep(30)  # A chance to hit Ctrl+C in REPL
     reset()
 
 wdt.feed()

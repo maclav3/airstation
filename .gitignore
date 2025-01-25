@@ -2,6 +2,8 @@
 # not committing in the repository to avoid leaking sensitive information (nearby stations)
 config.json
 
+key_store.db
+
 # typical gitignores for a Python project
 # Byte-compiled / optimized / DLL files
 __pycache__/
