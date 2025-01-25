@@ -1,6 +1,6 @@
-# create your own config.toml from the example file
+# create your own config.json from the example file
 # not committing in the repository to avoid leaking sensitive information (nearby stations)
-config.toml
+config.json
 
 # typical gitignores for a Python project
 # Byte-compiled / optimized / DLL files

@@ -7,6 +7,7 @@
 # Maciej Bratek
 # Adapted for my use case: 2025-01-25
 # added install_requirements() function which installs requirements from mip-requirements.txt with mip
+# added buzzer notifications for boot start, boot success and boot failure
 #
 # Source: https://github.com/micropython/micropython/tree/master/ports/esp32#configuring-the-wifi-and-using-the-board
 # Source: https://boneskull.com/micropython-on-esp32-part-1/
@@ -42,6 +43,8 @@
 import utime, mip
 from machine import reset, WDT
 from sys import exit
+from tone import Melody, Note, tones
+import json
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
 from micropython import alloc_emergency_exception_buf
@@ -166,9 +169,47 @@ def install_requirements():
                 print(f"\tFailed to install {line}: {_err}")
         print("done.")
 
+_conf = {}
+try:
+    with open('config.json') as f:
+        _conf = json.load(f)
+    _buzzer_pin = _conf['pins']['buzzer']
+    _volume = _conf['tone']['volume']
+except:
+    print('config.json file is not present')
+    print('defaulting to pin 18 for buzzer')
+    _buzzer_pin = 18
+    _volume = 50
+
+def melody_boot_start(pin: int) -> Melody:
+    melody = Melody(
+        Note(tones['C5'], 0.2),
+        Note(tones['E5'], 0.2),
+        Note(tones['G5'], 0.2)
+    )
+    return melody
+
+def melody_boot_success(pin: int) -> Melody:
+    melody = Melody(
+        Note(tones['G5'], 0.2),
+        Note(tones['E5'], 0.2),
+        Note(tones['C5'], 0.2)
+    )
+    return melody
+
+def melody_boot_failure(pin: int) -> Melody:
+    melody = Melody(
+        Note(tones['C5'], 0.2),
+        Note(tones['FS5'], 0.2),
+        Note(tones['C5'], 0.2)
+    )
+    return melody
+
 
 # Run selected functions at boot
 try:
+    melody_boot_start(_buzzer_pin).play()
+
     no_debug()
     wlan_connect(ssid_name, ssid_pass)
     ntp()  # Only needed if using HTTPS or local timestamp data logging
@@ -176,10 +217,15 @@ try:
     filesystem()  # Detect FAT or littlefs filesystem
     install_requirements()
     list_files()
+
+    melody_boot_success(_buzzer_pin).play()
+    wdt.feed()
+
 except KeyboardInterrupt:
     wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
     exit()
 except Exception as err:
+    melody_boot_failure(_buzzer_pin).play()
     print(f"ERROR: {err} Resetting Device")
     utime.sleep(2)  # A chance to hit Ctrl+C in REPL
     reset()

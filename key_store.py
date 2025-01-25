@@ -66,7 +66,8 @@ def get(key):
         return db[key].decode('utf-8')
     except KeyError:
         return None
-    db.close()
+    finally:
+        db.close()
 
 
 # Delete data from key_store.db

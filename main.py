@@ -1,4 +1,4 @@
-import requests, toml
+import requests, json
 
 _pm25norm = 25
 _pm10norm = 50
@@ -46,10 +46,11 @@ def get_sensor_community_data(station: SensorStation) -> SensorData:
     return sd
 
 if __name__ == '__main__':
-    toml_data = toml.load("config.toml")
+    with open('config.json') as f:
+        _conf = json.load(f)
 
-    for line in toml_data['stations']:
-        station = SensorStation(line['name'], line['id'], line['type'])
+    for _entry in _conf['stations']:
+        station = SensorStation(_entry['name'], _entry['id'], _entry['type'])
         if station.type == 'sensor.community':
             data = get_sensor_community_data(station)
             print(data)
