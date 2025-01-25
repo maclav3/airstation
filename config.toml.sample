@@ -1,0 +1,4 @@
+[[stations]]
+name = "Sample Station"
+type = "sensor.community"
+id = 1000

@@ -1,0 +1,34 @@
+version: '3'
+
+tasks:
+  test:
+    desc: Run tests
+    cmds:
+      - pytest
+
+  install:
+    desc: Install requirements
+    cmds:
+      - pip install -r requirements.txt
+
+  install-dev:
+    desc: Install development requirements
+    cmds:
+      - pip install -r requirements-dev.txt
+
+  lint:
+    desc: Lint code, excluding the lib directory
+    cmds:
+      - flake8 --exclude=.venv,lib
+
+  deploy:
+    deps:
+      - install
+      - install-dev
+    cmds:
+      - ampy -p /dev/ttyUSB0 put ./*.py
+
+  help:
+    desc: Show help
+    cmds:
+      - task --list
