@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.0.11">
   <diagram name="Page-1" id="7e0a89b8-554c-2b80-1dc8-d5c74ca68de4">
-    <mxGraphModel dx="573" dy="352" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+    <mxGraphModel dx="682" dy="420" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -345,6 +345,16 @@
         <mxCell id="fRjFHOvY2SyDoRDMswof-152" value="SCK" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;fillColor=none;strokeColor=default;dashed=1;textDirection=vertical-rl;horizontal=1;direction=south;dashPattern=1 1;" vertex="1" parent="1">
           <mxGeometry x="510" y="480" width="10" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="fRjFHOvY2SyDoRDMswof-161" style="edgeStyle=elbowEdgeStyle;shape=connector;rounded=0;jumpStyle=arc;jumpSize=9;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=oval;endFill=1;" edge="1" parent="1" source="fRjFHOvY2SyDoRDMswof-153">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="460" as="targetPoint" />
+            <mxPoint x="440" y="535" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="420" y="500" />
+              <mxPoint x="380" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="fRjFHOvY2SyDoRDMswof-153" value="3V3" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;fillColor=none;strokeColor=default;dashed=1;textDirection=vertical-rl;horizontal=1;direction=south;dashPattern=1 1;" vertex="1" parent="1">
           <mxGeometry x="440" y="510" width="10" height="30" as="geometry" />
         </mxCell>
@@ -355,6 +365,34 @@
           <mxGeometry x="610" y="512.5" width="20" height="25" as="geometry" />
         </mxCell>
         <mxCell id="fRjFHOvY2SyDoRDMswof-156" style="edgeStyle=elbowEdgeStyle;shape=connector;rounded=0;jumpStyle=arc;jumpSize=9;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=none;" edge="1" parent="1" source="fRjFHOvY2SyDoRDMswof-154" target="fRjFHOvY2SyDoRDMswof-155">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fRjFHOvY2SyDoRDMswof-157" style="edgeStyle=elbowEdgeStyle;shape=connector;rounded=0;jumpStyle=arc;jumpSize=9;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=none;" edge="1" parent="1" source="fRjFHOvY2SyDoRDMswof-115" target="fRjFHOvY2SyDoRDMswof-149">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415.5" y="465" as="sourcePoint" />
+            <mxPoint x="450" y="495" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="440" y="470" />
+              <mxPoint x="440" y="480" />
+              <mxPoint x="450" y="485" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fRjFHOvY2SyDoRDMswof-158" style="edgeStyle=elbowEdgeStyle;shape=connector;rounded=0;jumpStyle=arc;jumpSize=9;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=none;" edge="1" parent="1" source="fRjFHOvY2SyDoRDMswof-114" target="fRjFHOvY2SyDoRDMswof-150">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="475" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fRjFHOvY2SyDoRDMswof-159" style="edgeStyle=elbowEdgeStyle;shape=connector;rounded=0;jumpStyle=arc;jumpSize=9;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=none;" edge="1" parent="1" source="fRjFHOvY2SyDoRDMswof-113" target="fRjFHOvY2SyDoRDMswof-151">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="495" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fRjFHOvY2SyDoRDMswof-160" style="edgeStyle=elbowEdgeStyle;shape=connector;rounded=0;jumpStyle=arc;jumpSize=9;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=none;" edge="1" parent="1" source="fRjFHOvY2SyDoRDMswof-112" target="fRjFHOvY2SyDoRDMswof-152">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
