@@ -1,24 +1,29 @@
 import requests
 import json
+import time
 
 _pm25norm = 25
 _pm10norm = 50
 
 
 class SensorData:
-    def __init__(self):
-        self.pm10: float = None
-        self.pm25: float = None
+    def __init__(self, **kwargs):
+        self.pm10: float|None = kwargs.get('pm10', None)
+        self.pm25: float|None = kwargs.get('pm25', None)
+        self.aqi: int|None = kwargs.get('aqi', None)
 
-    def __str__(self):
+    def __str__(self) -> str:
         _pm10 = self.pm10 if self.pm10 is not None else 0
         _pm10Percent = "{:.2f}".format((_pm10 / _pm10norm * 100))
 
         _pm25 = self.pm25 if self.pm25 is not None else 0
         _pm25Percent = "{:.2f}".format((_pm25 / _pm25norm * 100))
 
-        return f"PM10: {self.pm10} ({_pm10Percent}%)\nPM2.5: {self.pm25} ({_pm25Percent}%)"
+        s = f"PM10: {self.pm10} ({_pm10Percent}%)\nPM2.5: {self.pm25} ({_pm25Percent}%)"
+        if self.aqi is not None:
+            s += f"\nAQI: {self.aqi}"
 
+        return s
 
 class SensorStation:
     def __init__(self, name: str, id: int, type: str):
@@ -26,7 +31,7 @@ class SensorStation:
         self.id = id
         self.type = type
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ({self.id})"
 
 
@@ -49,6 +54,19 @@ def get_sensor_community_data(station: SensorStation) -> SensorData:
 
     return sd
 
+def get_pms7003_data() -> SensorData:
+    print("Getting data from a local PMS7003 sensor")
+    from pms7003 import Pms7003
+    from aqi import AQI
+    pms = Pms7003(2)
+    pms_data = pms.read()
+    aqi = AQI.aqi(pms_data['PM2_5_ATM'], pms_data['PM10_0_ATM'])
+
+    return SensorData(
+        pm10=pms_data['PM10_0_ATM'],
+        pm25=pms_data['PM2_5_ATM'],
+        aqi=aqi
+    )
 
 if __name__ == '__main__':
     with open('config.json') as f:
@@ -59,3 +77,8 @@ if __name__ == '__main__':
         if station.type == 'sensor.community':
             data = get_sensor_community_data(station)
             print(data)
+
+    while True:
+        print(get_pms7003_data())
+        time.sleep(10)
+

@@ -186,10 +186,10 @@ try:
 
     wlan_connect(ssid_name, ssid_pass)
     ntp()  # Only needed if using HTTPS or local timestamp data logging
-    mem_stats()
-    filesystem()  # Detect FAT or littlefs filesystem
+    # mem_stats()
+    # filesystem()  # Detect FAT or littlefs filesystem
     install_requirements()
-    list_files()
+    # list_files()
 
     _melody_boot_success.play()
     # TODO: this can be removed when the loop function in main.py is implemented
