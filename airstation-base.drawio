@@ -187,7 +187,7 @@
         <mxCell id="fRjFHOvY2SyDoRDMswof-17" value="BUZZ | O35" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=none;strokeColor=default;dashed=1;dashPattern=1 1;" parent="fRjFHOvY2SyDoRDMswof-61" vertex="1">
           <mxGeometry x="230" y="25" width="70" height="10" as="geometry" />
         </mxCell>
-        <mxCell id="fRjFHOvY2SyDoRDMswof-18" value="IQA-LED | O34" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=none;strokeColor=default;dashed=1;dashPattern=1 1;" parent="fRjFHOvY2SyDoRDMswof-61" vertex="1">
+        <mxCell id="fRjFHOvY2SyDoRDMswof-18" value="IQA-LED | O2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=none;strokeColor=default;dashed=1;dashPattern=1 1;" parent="fRjFHOvY2SyDoRDMswof-61" vertex="1">
           <mxGeometry x="230" y="50" width="80" height="10" as="geometry" />
         </mxCell>
         <mxCell id="fRjFHOvY2SyDoRDMswof-19" value="PM10 | DAC25" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=none;strokeColor=default;dashed=1;dashPattern=1 1;" parent="fRjFHOvY2SyDoRDMswof-61" vertex="1">
