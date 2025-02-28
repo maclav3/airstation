@@ -27,11 +27,17 @@ tasks:
       - deps
     vars:
       USB_PORT:
-        # Get the USB port of the ESP32
+        # Use the esptool to get the current USB port of the ESP32
+        # Sometimes the port can change when connecting and disconnecting the board
         sh: esptool.py read_flash_status | grep -oE "/dev/ttyUSB.+?"
     dir: src
+    sources:
+      - src
+    generates:
+      - /tmp/ampy-ls.txt
     cmds:
-      - ampy -p {{.USB_PORT}} put
+      - ampy -p {{.USB_PORT}} put .
+      - ampy -p {{.USB_PORT}} ls > /tmp/ampy-ls.txt
 
   get-micropython-image:
     desc: Get the latest MicroPython image
