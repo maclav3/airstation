@@ -6,10 +6,10 @@ tasks:
     sources:
       - requirements-dev.txt
     generates:
-      - .venv/.freeze
+      - /tmp/.pip-freeze
     cmds:
       - pip install -r requirements-dev.txt
-      - pip freeze > .venv/.freeze
+      - pip freeze > /tmp/.pip-freeze
 
   fmt:
     desc: Format code
