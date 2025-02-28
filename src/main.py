@@ -56,8 +56,8 @@ def get_sensor_community_data(station: SensorStation) -> SensorData:
 
 def get_pms7003_data() -> SensorData:
     print("Getting data from a local PMS7003 sensor")
-    from pms7003 import Pms7003
-    from aqi import AQI
+    from src.devices.pms7003 import Pms7003
+    from src.devices.aqi import AQI
     pms = Pms7003(2)
     pms_data = pms.read()
     aqi = AQI.aqi(pms_data['PM2_5_ATM'], pms_data['PM10_0_ATM'])
@@ -69,7 +69,7 @@ def get_pms7003_data() -> SensorData:
     )
 
 if __name__ == '__main__':
-    with open('config.json') as f:
+    with open('../config.json') as f:
         _conf = json.load(f)
 
     for _entry in _conf['stations']:
