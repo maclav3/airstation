@@ -24,7 +24,7 @@ jobs:
         python -m pip install --upgrade pip
         task deps
     - name: Analysing the code with pylint
-      run: |
-        task lint
+      run: task lint
     - name: Check formatting
+      run: task check-fmt
       
