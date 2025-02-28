@@ -3,8 +3,13 @@ version: '3'
 tasks:
   deps:
     desc: Install development requirements
+    sources:
+      - requirements-dev.txt
+    generates:
+      - .venv/.freeze
     cmds:
       - pip install -r requirements-dev.txt
+      - pip freeze > .venv/.freeze
 
   fmt:
     desc: Format code
@@ -17,10 +22,16 @@ tasks:
       - flake8 --exclude=.venv,lib --ignore=E501
 
   deploy:
+    desc: Deploy code to the ESP32
     deps:
-      - install-dev
+      - deps
+    vars:
+      USB_PORT:
+        # Get the USB port of the ESP32
+        sh: esptool.py read_flash_status | grep -oE "/dev/ttyUSB.+?"
+    dir: src
     cmds:
-      - ampy -p /dev/ttyUSB0 put src/*
+      - ampy -p {{.USB_PORT}} put
 
   get-micropython-image:
     desc: Get the latest MicroPython image
