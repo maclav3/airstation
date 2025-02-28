@@ -2,7 +2,6 @@
 
 from flashbdev import bdev
 
-
 def check():
     buf = bytearray(16)
     bdev.readblocks(0, buf)

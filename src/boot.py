@@ -124,7 +124,7 @@ def mem_stats():
 
 def filesystem():
     try:
-        from detect_filesystem import check
+        from src.boot import check
         print('   File System ', check())
     except ImportError:
         print('detect_filesystem.py module is not present')
@@ -143,7 +143,7 @@ def install_requirements():
     print()
     print("Installing requirements from requirements.txt...")
     print()
-    with open('mip-requirements.txt') as f:
+    with open('../mip-requirements.txt') as f:
         for line in f:
             if line.startswith('#'):
                 continue

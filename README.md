@@ -9,4 +9,4 @@ Very early work in progress
 
 advanced WIP
 
-![hardware diagram](https://raw.githubusercontent.com/maclav3/airstation/refs/heads/master/airstation-base.drawio.png)
+![hardware diagram](https://raw.githubusercontent.com/maclav3/airstation/refs/heads/master/doc/assembly/airstation-base.drawio.png)
