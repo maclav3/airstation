@@ -16,6 +16,11 @@ tasks:
     cmds:
       - black src
 
+  check-fmt:
+    desc: Check code formatting
+    cmds:
+      - black --check src
+
   lint:
     desc: Lint code, excluding the lib directory
     cmds:
