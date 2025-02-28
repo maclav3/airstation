@@ -8,9 +8,9 @@ _pm10norm = 50
 
 class SensorData:
     def __init__(self, **kwargs):
-        self.pm10: float|None = kwargs.get('pm10', None)
-        self.pm25: float|None = kwargs.get('pm25', None)
-        self.aqi: int|None = kwargs.get('aqi', None)
+        self.pm10: float | None = kwargs.get("pm10", None)
+        self.pm25: float | None = kwargs.get("pm25", None)
+        self.aqi: int | None = kwargs.get("aqi", None)
 
     def __str__(self) -> str:
         _pm10 = self.pm10 if self.pm10 is not None else 0
@@ -25,6 +25,7 @@ class SensorData:
 
         return s
 
+
 class SensorStation:
     def __init__(self, name: str, id: int, type: str):
         self.name = name
@@ -37,48 +38,50 @@ class SensorStation:
 
 def get_sensor_community_data(station: SensorStation) -> SensorData:
     print("Getting sensor community data from station %s" % station)
-    response = requests.get(f"https://data.sensor.community/airrohr/v1/sensor/{station.id}/")
+    response = requests.get(
+        f"https://data.sensor.community/airrohr/v1/sensor/{station.id}/"
+    )
 
     if response.status_code != 200:
-        raise Exception("Failed to get sensor community data; status code %d" % response.status_code)
+        raise Exception(
+            "Failed to get sensor community data; status code %d" % response.status_code
+        )
 
     resp = response.json()
-    last_measurements = resp[0]['sensordatavalues']
+    last_measurements = resp[0]["sensordatavalues"]
 
     sd = SensorData()
     for m in last_measurements:
-        if m['value_type'] == 'P1':
-            sd.pm10 = float(m['value'])
-        if m['value_type'] == 'P2':
-            sd.pm25 = float(m['value'])
+        if m["value_type"] == "P1":
+            sd.pm10 = float(m["value"])
+        if m["value_type"] == "P2":
+            sd.pm25 = float(m["value"])
 
     return sd
+
 
 def get_pms7003_data() -> SensorData:
     print("Getting data from a local PMS7003 sensor")
     from src.devices.pms7003 import Pms7003
     from src.devices.aqi import AQI
+
     pms = Pms7003(2)
     pms_data = pms.read()
-    aqi = AQI.aqi(pms_data['PM2_5_ATM'], pms_data['PM10_0_ATM'])
+    aqi = AQI.aqi(pms_data["PM2_5_ATM"], pms_data["PM10_0_ATM"])
 
-    return SensorData(
-        pm10=pms_data['PM10_0_ATM'],
-        pm25=pms_data['PM2_5_ATM'],
-        aqi=aqi
-    )
+    return SensorData(pm10=pms_data["PM10_0_ATM"], pm25=pms_data["PM2_5_ATM"], aqi=aqi)
 
-if __name__ == '__main__':
-    with open('../config.json') as f:
+
+if __name__ == "__main__":
+    with open("../config.json") as f:
         _conf = json.load(f)
 
-    for _entry in _conf['stations']:
-        station = SensorStation(_entry['name'], _entry['id'], _entry['type'])
-        if station.type == 'sensor.community':
+    for _entry in _conf["stations"]:
+        station = SensorStation(_entry["name"], _entry["id"], _entry["type"])
+        if station.type == "sensor.community":
             data = get_sensor_community_data(station)
             print(data)
 
     while True:
         print(get_pms7003_data())
         time.sleep(10)
-

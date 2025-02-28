@@ -25,19 +25,19 @@
 
 import btree
 
-file = 'key_store.db'
+file = "key_store.db"
 
 
 # Create a new key_store.db database or update config settings
 def init():
     try:
-        f = open(file, 'r+b')
+        f = open(file, "r+b")
     except OSError:
-        f = open(file, 'w+b')
+        f = open(file, "w+b")
     db = btree.open(f, pagesize=512)
-    db[b'ssid_name'] = input('Enter WiFi SSID - ')
-    db[b'ssid_pass'] = input('Enter WiFi password - ')
-    db[b'ntp_host'] = 'time.cloudflare.com'
+    db[b"ssid_name"] = input("Enter WiFi SSID - ")
+    db[b"ssid_pass"] = input("Enter WiFi password - ")
+    db[b"ntp_host"] = "time.cloudflare.com"
     db.flush()
     # print("%s, %s, and %s added to %s file" % (db[b'ssid_name'].decode('utf-8'), db[b'ssid_pass'].decode('utf-8'), db[b'mqtt_broker'].decode('utf-8'), file))
     db.close()
@@ -45,7 +45,7 @@ def init():
 
 # Added new key/value pairs to key_store.db
 def set(key, value):
-    f = open(file, 'r+b')
+    f = open(file, "r+b")
     db = btree.open(f)
     db[key] = value
     db.flush()
@@ -54,10 +54,10 @@ def set(key, value):
 
 # Retrieve data from key_store.db
 def get(key):
-    f = open(file, 'r+b')
+    f = open(file, "r+b")
     db = btree.open(f)
     try:
-        return db[key].decode('utf-8')
+        return db[key].decode("utf-8")
     except KeyError:
         return None
     finally:
@@ -66,7 +66,7 @@ def get(key):
 
 # Delete data from key_store.db
 def delete(key):
-    f = open(file, 'r+b')
+    f = open(file, "r+b")
     db = btree.open(f)
     del db[key]
     db.flush()
@@ -75,35 +75,36 @@ def delete(key):
 
 # This just prints to the screen which is not usable in scripts.
 def dumptext():
-    f = open(file, 'r+b')
+    f = open(file, "r+b")
     db = btree.open(f)
     for key in db:
-        print(key.decode('utf-8'), db[key].decode('utf-8'))
+        print(key.decode("utf-8"), db[key].decode("utf-8"))
     db.close()
 
 
 # Allows you to download local data: ampy -p /dev/ttyUSB0 get key_store.txt
 def dumpfile():
-    f = open(file, 'r+b')
+    f = open(file, "r+b")
     db = btree.open(f)
-    with open('key_store.txt', 'wt') as text:
+    with open("key_store.txt", "wt") as text:
         for key in db:
-            pair = "{}:{}\n".format(key.decode('utf-8'), db[key].decode('utf-8'))
+            pair = "{}:{}\n".format(key.decode("utf-8"), db[key].decode("utf-8"))
             text.write(pair)
     db.close()
-    print('key_store.txt created')
+    print("key_store.txt created")
 
 
 # Removes key_store.db
 def wipe():
     import uos
+
     uos.remove(file)
-    print('%s removed' % file)
+    print("%s removed" % file)
 
 
 # Check to see if file is on disk
 try:
-    f = open(file, 'r+b')
+    f = open(file, "r+b")
 except OSError:
-    print('WARNING: No %s on disk' % file)
+    print("WARNING: No %s on disk" % file)
     init()

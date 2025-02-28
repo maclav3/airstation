@@ -1,5 +1,6 @@
 micropython-esp32-stubs
 adafruit-ampy
+black
 flake8
 pytest
 esptool
