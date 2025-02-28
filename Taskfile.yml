@@ -1,15 +1,15 @@
 version: '3'
 
 tasks:
-  install:
-    desc: Install requirements
-    cmds:
-      - pip install -r requirements.txt
-
-  install-dev:
+  deps:
     desc: Install development requirements
     cmds:
       - pip install -r requirements-dev.txt
+
+  fmt:
+    desc: Format code
+    cmds:
+      - black src
 
   lint:
     desc: Lint code, excluding the lib directory

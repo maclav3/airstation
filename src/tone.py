@@ -11,7 +11,7 @@ class Note:
 
 class Melody:
     def __init__(self, *notes, **kwargs):
-        _pin = int(key_store.get('buzzer_pin')) or 18
+        _pin = int(key_store.get("buzzer_pin")) or 18
         self.pin = Pin(_pin, Pin.OUT)
 
         self.melody = []
@@ -19,11 +19,11 @@ class Melody:
             self.melody.append(note)
 
         try:
-            self.tempo = kwargs['tempo']
+            self.tempo = kwargs["tempo"]
         except KeyError:
             self.tempo = 1
 
-        self.volume = int(key_store.get('buzzer_volume')) or 512
+        self.volume = int(key_store.get("buzzer_volume")) or 512
         self.playing = False
 
     def play(self):
@@ -139,24 +139,24 @@ tones = {
     "C8": 4186,
     "CS8": 4435,
     "D8": 4699,
-    "DS8": 4978
+    "DS8": 4978,
 }
 
 # Set default values
-if not key_store.get('buzzer_pin'):
-    key_store.set('buzzer_pin', str(18))
-if not key_store.get('buzzer_volume'):
-    key_store.set('buzzer_volume', str(int(0.3 * 65535)))
+if not key_store.get("buzzer_pin"):
+    key_store.set("buzzer_pin", str(18))
+if not key_store.get("buzzer_volume"):
+    key_store.set("buzzer_volume", str(int(0.3 * 65535)))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     melody = Melody(
-        Note(tones['C4'], 0.5),
-        Note(tones['D4'], 0.5),
-        Note(tones['E4'], 0.5),
-        Note(tones['F4'], 0.5),
-        Note(tones['G4'], 0.5),
-        Note(tones['A4'], 0.5),
-        Note(tones['B4'], 0.5),
-        Note(tones['C5'], 0.5),
+        Note(tones["C4"], 0.5),
+        Note(tones["D4"], 0.5),
+        Note(tones["E4"], 0.5),
+        Note(tones["F4"], 0.5),
+        Note(tones["G4"], 0.5),
+        Note(tones["A4"], 0.5),
+        Note(tones["B4"], 0.5),
+        Note(tones["C5"], 0.5),
     )
     melody.play()

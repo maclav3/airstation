@@ -51,56 +51,67 @@ from tone import Melody, Note, tones
 from micropython import alloc_emergency_exception_buf
 
 print()
-print('=' * 45)
-print('boot.py: Press CTRL+C to enter REPL...')
+print("=" * 45)
+print("boot.py: Press CTRL+C to enter REPL...")
 print()
 
 utime.sleep(2)  # A chance to hit Ctrl+C in REPL
 alloc_emergency_exception_buf(100)
-wdt = WDT(timeout=300000)  # 5-minutes for boot.py to finish and move to main.py / wdt.feed() to reset timer
+wdt = WDT(
+    timeout=300000
+)  # 5-minutes for boot.py to finish and move to main.py / wdt.feed() to reset timer
 
 
 # Connect to WiFI
 def wlan_connect(ssid, password):
     import network
     from ubinascii import hexlify
+
     wlan = network.WLAN(network.STA_IF)
     if not wlan.active() or not wlan.isconnected():
         wlan.active(True)
-        print('       MAC: ', hexlify(wlan.config('mac'), ':').decode())
-        print(' WiFi SSID: ', ssid)
+        print("       MAC: ", hexlify(wlan.config("mac"), ":").decode())
+        print(" WiFi SSID: ", ssid)
         wlan.connect(ssid, password)
         start_wifi = utime.ticks_ms()
         while not wlan.isconnected():
-            if utime.ticks_diff(utime.ticks_ms(), start_wifi) > 20000:  # 20 second timeout
+            if (
+                utime.ticks_diff(utime.ticks_ms(), start_wifi) > 20000
+            ):  # 20 second timeout
                 print(f"Wifi Timeout, status: {wlan.status()}... Resetting Device")
                 utime.sleep(2)
                 reset()
-    print('        IP: ', wlan.ifconfig()[0])
-    print('    Subnet: ', wlan.ifconfig()[1])
-    print('   Gateway: ', wlan.ifconfig()[2])
-    print('       DNS: ', wlan.ifconfig()[3])
+    print("        IP: ", wlan.ifconfig()[0])
+    print("    Subnet: ", wlan.ifconfig()[1])
+    print("   Gateway: ", wlan.ifconfig()[2])
+    print("       DNS: ", wlan.ifconfig()[3])
     print()
 
 
 # Set RTC using NTP
 def ntp():
     import ntptime
-    ntptime.host = key_store.get('ntp_host')
+
+    ntptime.host = key_store.get("ntp_host")
     print("NTP Server: ", ntptime.host)
     start_ntp = utime.ticks_ms()
-    while utime.time() < 10000:  # Clock is not set with NTP if unixtime is less than 10000
+    while (
+        utime.time() < 10000
+    ):  # Clock is not set with NTP if unixtime is less than 10000
         ntptime.settime()
         if utime.ticks_diff(utime.ticks_ms(), start_ntp) > 10000:  # 10 second timeout
-            print('NTP Timeout... Resetting Device')
+            print("NTP Timeout... Resetting Device")
             reset()
-    print('  UTC Time:  {}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}'.format(*utime.localtime()))
+    print(
+        "  UTC Time:  {}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(*utime.localtime())
+    )
     print()
 
 
 # Suppress ESP debug messages in the REPL
 def no_debug():
     from esp import osdebug
+
     osdebug(None)
 
 
@@ -108,34 +119,39 @@ def mem_stats():
     from esp import flash_size
     from uos import statvfs
     import gc
-    fs_stat = statvfs('/')
+
+    fs_stat = statvfs("/")
     fs_size = fs_stat[0] * fs_stat[2]
     fs_free = fs_stat[0] * fs_stat[3]
     fs_used = fs_stat[0] * (fs_stat[2] - fs_stat[3])
-    print('Memory Information:')
-    print('   RAM Size     {:5,}KB'.format(int((gc.mem_alloc() + gc.mem_free()) / 1024)))
+    print("Memory Information:")
+    print(
+        "   RAM Size     {:5,}KB".format(int((gc.mem_alloc() + gc.mem_free()) / 1024))
+    )
     print()
-    print('Flash Storage Information:')
-    print('   Flash Size   {:5,}KB'.format(int(flash_size() / 1024)))
-    print('   User Space   {:5,}KB'.format(int(fs_size / 1024)))
-    print('   Free Space   {:5,}KB'.format(int(fs_free / 1024)))
-    print('   Used Space   {:5,}KB'.format(int(fs_used / 1024)))
+    print("Flash Storage Information:")
+    print("   Flash Size   {:5,}KB".format(int(flash_size() / 1024)))
+    print("   User Space   {:5,}KB".format(int(fs_size / 1024)))
+    print("   Free Space   {:5,}KB".format(int(fs_free / 1024)))
+    print("   Used Space   {:5,}KB".format(int(fs_used / 1024)))
 
 
 def filesystem():
     try:
         from src.boot import check
-        print('   File System ', check())
+
+        print("   File System ", check())
     except ImportError:
-        print('detect_filesystem.py module is not present')
+        print("detect_filesystem.py module is not present")
         pass
 
 
 def list_files():
     from uos import listdir
+
     print()
     print("List of files on this device:")
-    print('   %s' % '\n   '.join(map(str, sorted(listdir('/')))))
+    print("   %s" % "\n   ".join(map(str, sorted(listdir("/")))))
     print()
 
 
@@ -143,11 +159,11 @@ def install_requirements():
     print()
     print("Installing requirements from requirements.txt...")
     print()
-    with open('../mip-requirements.txt') as f:
+    with open("../mip-requirements.txt") as f:
         for line in f:
-            if line.startswith('#'):
+            if line.startswith("#"):
                 continue
-            if line.strip() == '':
+            if line.strip() == "":
                 continue
 
             try:
@@ -159,21 +175,15 @@ def install_requirements():
 
 
 _melody_boot_start = Melody(
-    Note(tones['C5'], 0.2),
-    Note(tones['E5'], 0.2),
-    Note(tones['G5'], 0.2)
+    Note(tones["C5"], 0.2), Note(tones["E5"], 0.2), Note(tones["G5"], 0.2)
 )
 
 _melody_boot_success = Melody(
-    Note(tones['G5'], 0.2),
-    Note(tones['E5'], 0.2),
-    Note(tones['C5'], 0.2)
+    Note(tones["G5"], 0.2), Note(tones["E5"], 0.2), Note(tones["C5"], 0.2)
 )
 
 _melody_boot_failure = Melody(
-    Note(tones['C5'], 0.2),
-    Note(tones['FS5'], 0.2),
-    Note(tones['C5'], 0.2)
+    Note(tones["C5"], 0.2), Note(tones["FS5"], 0.2), Note(tones["C5"], 0.2)
 )
 
 # Run selected functions at boot
@@ -181,8 +191,8 @@ try:
     _melody_boot_start.play()
 
     no_debug()
-    ssid_name = key_store.get('ssid_name')
-    ssid_pass = key_store.get('ssid_pass')
+    ssid_name = key_store.get("ssid_name")
+    ssid_pass = key_store.get("ssid_pass")
 
     wlan_connect(ssid_name, ssid_pass)
     ntp()  # Only needed if using HTTPS or local timestamp data logging
@@ -194,10 +204,14 @@ try:
     _melody_boot_success.play()
     # TODO: this can be removed when the loop function in main.py is implemented
     # It will feed the timer then, for now – to avoid the irritating watchdog reset – bump the timer to 1 day
-    wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
+    wdt = WDT(
+        timeout=86400000
+    )  # Watchdog Timer cannot be disabled, so set to expire in 1 day
 
 except KeyboardInterrupt:
-    wdt = WDT(timeout=86400000)  # Watchdog Timer cannot be disabled, so set to expire in 1 day
+    wdt = WDT(
+        timeout=86400000
+    )  # Watchdog Timer cannot be disabled, so set to expire in 1 day
     exit()
 except Exception as err:
     _melody_boot_failure.play()
@@ -206,6 +220,6 @@ except Exception as err:
     reset()
 
 wdt.feed()
-print('boot.py: end of script')
-print('=' * 45)
+print("boot.py: end of script")
+print("=" * 45)
 print()
