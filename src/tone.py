@@ -1,6 +1,6 @@
 from machine import Pin, PWM
 from utime import sleep
-from src import key_store
+import key_store
 
 
 class Note:
