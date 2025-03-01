@@ -138,7 +138,7 @@ def mem_stats():
 
 def filesystem():
     try:
-        from src.boot import check
+        from boot import check
 
         print("   File System ", check())
     except ImportError:

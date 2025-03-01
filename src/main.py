@@ -62,8 +62,8 @@ def get_sensor_community_data(station: SensorStation) -> SensorData:
 
 def get_pms7003_data() -> SensorData:
     print("Getting data from a local PMS7003 sensor")
-    from src.devices.pms7003 import Pms7003
-    from src.devices.aqi import AQI
+    from devices.pms7003 import Pms7003
+    from devices.aqi import AQI
 
     pms = Pms7003(2)
     pms_data = pms.read()
