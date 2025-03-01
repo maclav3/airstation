@@ -41,7 +41,9 @@ tasks:
     generates:
       - /tmp/ampy-ls.txt
     cmds:
-      - ampy -p {{.USB_PORT}} put .
+      - find . -mindepth 1 -maxdepth 1 -printf '%p\n' -exec ampy -p {{.USB_PORT}} put {} \;
+      - ampy -p {{.USB_PORT}} put ../config.json
+      - ampy -p {{.USB_PORT}} put ../mip-requirements.txt
       - ampy -p {{.USB_PORT}} ls > /tmp/ampy-ls.txt
 
   get-micropython-image:
