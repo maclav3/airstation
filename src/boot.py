@@ -150,21 +150,24 @@ def filesystem():
 
 def install_requirements():
     print()
-    print("Installing requirements from requirements.txt...")
+    print("Installing requirements from mip-requirements.txt...")
     print()
-    with open("../mip-requirements.txt") as f:
-        for line in f:
-            if line.startswith("#"):
-                continue
-            if line.strip() == "":
-                continue
+    try:
+        with open("mip-requirements.txt") as f:
+            for line in f:
+                if line.startswith("#"):
+                    continue
+                if line.strip() == "":
+                    continue
 
-            try:
-                print(f"\t{line}")
-                mip.install(line)
-            except Exception as _err:
-                print(f"\tFailed to install {line}: {_err}")
-        print("done.")
+                try:
+                    print(f"\t{line}")
+                    mip.install(line)
+                except Exception as _err:
+                    print(f"\tFailed to install {line}: {_err}")
+            print("done.")
+    except OSError:
+        print("mip-requirements.txt file not found")
 
 
 _melody_boot_start = Melody(

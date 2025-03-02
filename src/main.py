@@ -1,4 +1,4 @@
-import requests
+import urequests
 import json
 import time
 
@@ -38,7 +38,7 @@ class SensorStation:
 
 def get_sensor_community_data(station: SensorStation) -> SensorData:
     print("Getting sensor community data from station %s" % station)
-    response = requests.get(
+    response = urequests.get(
         f"https://data.sensor.community/airrohr/v1/sensor/{station.id}/"
     )
 

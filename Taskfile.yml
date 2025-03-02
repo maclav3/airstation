@@ -1,7 +1,7 @@
 version: '3'
 
 env:
-  MICROPYTHON_VERSION: v1.24.0
+  MICROPYTHON_VERSION: 1.24.0
 
 tasks:
   deps:
@@ -9,8 +9,8 @@ tasks:
     sources:
       - requirements-dev.txt
     status:
-        - test -f /tmp/.pip-freeze
-        - diff -q /tmp/.pip-freeze <(pip freeze)
+      - test -f /tmp/.pip-freeze
+      - diff -q /tmp/.pip-freeze <(pip freeze)
     cmds:
       - pip install -r requirements-dev.txt
       - pip freeze > /tmp/.pip-freeze
@@ -18,12 +18,12 @@ tasks:
   fmt:
     desc: Format code
     cmds:
-      - black src
+      - black ./src
 
   check-fmt:
     desc: Check code formatting
     cmds:
-      - black --check src
+      - black --check ./src
 
   lint:
     desc: Lint code, excluding the lib directory
@@ -41,29 +41,29 @@ tasks:
         sh: esptool.py read_flash_status | grep -oE "/dev/ttyUSB.+?" || (echo "Board not connected" > /dev/stderr && exit 1)
     cmds:
       # clear the files on the ESP32, excluding the key_store.db
-      - ampy -p {{.USB_PORT}} run src/tree.py
+      - ampy -p {{.USB_PORT}} run ./src/tree.py
       - (ampy -p {{.USB_PORT}} ls | grep -v /key_store.db > /tmp/ampy-ls.txt) || true
       - cat /tmp/ampy-ls.txt | while read line; do echo $line | tee /dev/stdout | (grep -q "\." && ampy -p {{.USB_PORT}} rm $line || ampy -p {{.USB_PORT}} rmdir $line); done
       - rm /tmp/ampy-ls.txt
 
       # cross-compile all the .py files and prepare the dist directory
       - find src -name '*.py' | grep -v "boot.py" | grep -v "main.py" | xargs -n 1 mpy-cross
-      - mkdir -p dist && rm -rf dist/*
+      - mkdir -p ./dist && rm -rf ./dist/*
       - find src -mindepth 1 -type d | sed 's|src|dist|' | xargs mkdir -p
       - find src -name '*.mpy' -print0 | xargs -0 -I {} sh -c 'mkdir -p $(dirname {}) && mv {} $(echo {} | sed "s|src|dist|")'
       # boot.py and main.py cannot be cross-compiled
-      - cp src/boot.py dist/
-      - cp src/main.py dist/
+      - cp src/boot.py ./dist/
+      - cp src/main.py ./dist/
 
       # copy configuration
-      - cp config.json dist/
-      - cp mip-requirements.txt dist/
+      - cp config.json ./dist/
 
       # upload the files to the ESP32
       - find dist -mindepth 1 -maxdepth 1 -exec ampy -p {{.USB_PORT}} put {} \;
       - ampy -p {{.USB_PORT}} run src/tree.py
       - ampy -p {{.USB_PORT}} reset
-
+    defer:
+      - find ./src -name '*.mpy' | xargs rm
 
   get-micropython-image:
     desc: Get the latest MicroPython image
@@ -78,24 +78,6 @@ tasks:
       - get-micropython-image
     cmds:
       - esptool.py --chip esp32 --baud 460800 write_flash -ez 0x1000 micropython/ESP32_GENERIC-20241129-v1.24.1.bin
-
-  micropython-download:
-    desc: Download the MicroPython source code
-    status:
-      - test -d firmware/micropython
-    cmds:
-      - mkdir -p firmware/micropython
-      - wget https://github.com/micropython/micropython/archive/refs/tags/${MICROPYTHON_VERSION}.tar.gz -O /tmp/micropython.tar.gz
-      - tar -xzf /tmp/micropython.tar.gz -C firmware/
-      - rm /tmp/micropython.tar.gz
-
-  build-micropython:
-    deps:
-      - micropython-download
-    cmds:
-      - cd firmware/micropython-${MICROPYTHON_VERSION}/ports/esp32
-      - make submodules
-      - make BOARD=ESP32
 
   help:
     desc: Show help
