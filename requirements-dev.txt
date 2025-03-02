@@ -4,3 +4,4 @@ black
 flake8
 pytest
 esptool
+mpy-cross

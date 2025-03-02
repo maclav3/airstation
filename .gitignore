@@ -4,6 +4,7 @@ config.json
 
 key_store.db
 micropython
+firmware/
 
 # typical gitignores for a Python project
 # Byte-compiled / optimized / DLL files
