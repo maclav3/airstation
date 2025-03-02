@@ -1,6 +1,5 @@
 import urequests
 import json
-import time
 
 _pm25norm = 25
 _pm10norm = 50
@@ -82,6 +81,14 @@ if __name__ == "__main__":
             data = get_sensor_community_data(station)
             print(data)
 
-    while True:
-        print(get_pms7003_data())
-        time.sleep(10)
+    from lib.microWebSrv import MicroWebSrv
+    import server
+
+    _ = server
+
+    mws = MicroWebSrv(webPath="/www")  # TCP port 80 and files in /www
+    mws.Start(threaded=True)  # Starts server in a new thread
+
+    # while True:
+    #     print(get_pms7003_data())
+    #     time.sleep(10)

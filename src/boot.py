@@ -46,7 +46,6 @@ from machine import reset, WDT
 from sys import exit
 import key_store
 from tone import Melody, Note, tones
-from tree import print_tree
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
 from micropython import alloc_emergency_exception_buf
