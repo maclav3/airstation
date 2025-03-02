@@ -47,13 +47,14 @@ tasks:
       - rm /tmp/ampy-ls.txt
 
       # cross-compile all the .py files and prepare the dist directory
-      - find src -name '*.py' | grep -v "boot.py" | grep -v "main.py" | xargs -n 1 mpy-cross
+      - find ./src -name '*.py' | grep -v "boot.py" | grep -v "main.py" | xargs -n 1 mpy-cross
       - mkdir -p ./dist && rm -rf ./dist/*
-      - find src -mindepth 1 -type d | sed 's|src|dist|' | xargs mkdir -p
-      - find src -name '*.mpy' -print0 | xargs -0 -I {} sh -c 'mkdir -p $(dirname {}) && mv {} $(echo {} | sed "s|src|dist|")'
+      - find ./src -mindepth 1 -type d | sed 's|src|dist|' | xargs mkdir -p
+      - find ./src -name '*.mpy' -print0 | xargs -0 -I {} sh -c 'mkdir -p $(dirname {}) && mv {} $(echo {} | sed "s|src|dist|")'
       # boot.py and main.py cannot be cross-compiled
-      - cp src/boot.py ./dist/
-      - cp src/main.py ./dist/
+      - cp ./src/boot.py ./dist/
+      - cp ./src/main.py ./dist/
+      - cp -r ./www ./dist/
 
       # copy configuration
       - cp config.json ./dist/
