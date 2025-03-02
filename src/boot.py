@@ -46,9 +46,11 @@ from machine import reset, WDT
 from sys import exit
 import key_store
 from tone import Melody, Note, tones
+from tree import print_tree
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
 from micropython import alloc_emergency_exception_buf
+
 
 print()
 print("=" * 45)
@@ -146,15 +148,6 @@ def filesystem():
         pass
 
 
-def list_files():
-    from uos import listdir
-
-    print()
-    print("List of files on this device:")
-    print("   %s" % "\n   ".join(map(str, sorted(listdir("/")))))
-    print()
-
-
 def install_requirements():
     print()
     print("Installing requirements from requirements.txt...")
@@ -199,7 +192,7 @@ try:
     # mem_stats()
     # filesystem()  # Detect FAT or littlefs filesystem
     install_requirements()
-    # list_files()
+    # print_tree("/")
 
     _melody_boot_success.play()
     # TODO: this can be removed when the loop function in main.py is implemented
