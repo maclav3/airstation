@@ -1,5 +1,9 @@
+import time
 import urequests
 import json
+from devices.ens160 import ENS160_calibrated
+from machine import SoftI2C, Pin
+from lib.BME280 import BME280, BME280_OSAMPLE_2
 
 _pm25norm = 25
 _pm10norm = 50
@@ -47,7 +51,11 @@ def get_sensor_community_data(station: SensorStation) -> SensorData:
         )
 
     resp = response.json()
-    last_measurements = resp[0]["sensordatavalues"]
+    try:
+        last_measurements = resp[0]["sensordatavalues"]
+    except IndexError or KeyError:
+        print("Unexpected response from sensor.community API: %s" % resp)
+        return SensorData()
 
     sd = SensorData()
     for m in last_measurements:
@@ -84,11 +92,49 @@ if __name__ == "__main__":
     from lib.microWebSrv import MicroWebSrv
     import server
 
+    # import for routing side effect
     _ = server
+
+    i2c = SoftI2C(scl=Pin(4), sda=Pin(16))
+
+    # TODO: need to panic if the sensor is not connected
+    ens160 = ENS160_calibrated(i2c)
+    bme280 = BME280(mode=BME280_OSAMPLE_2, i2c=i2c)
 
     mws = MicroWebSrv(webPath="/www")  # TCP port 80 and files in /www
     mws.Start(threaded=True)  # Starts server in a new thread
 
-    # while True:
-    #     print(get_pms7003_data())
-    #     time.sleep(10)
+    while True:
+        try:
+            temp, pressure, hum = bme280.temperature, bme280.pressure, bme280.humidity
+        except OSError as e:
+            print("Failed to read BME280 data: %s" % e)
+            temp, pressure, hum = None, None, None
+
+        if temp and hum:
+            # extract the numerical part from "{}.{:02d}C"
+            _temp: float = float(temp[:-1])
+            # extract the numerical part from "{}.{:02d}%"
+            _hum = float(hum[:-1])
+
+            ens160.set_ambient_temp(_temp)
+            ens160.set_humidity(_hum)
+
+            print(
+                f"BME280Temp: {temp}\u00b0C\n"
+                f"BME280Pressure: {pressure}\n"
+                f"BME280RH: {hum}%\n"
+            )
+
+        aqi, tvoc, eco2, temp, rh, eco2_rating, tvoc_rating = ens160.read_air_quality()
+        print(
+            f"ENS160Temp: {temp:.1f}\u00b0C\n"
+            f"ENS160RH: {rh:.1f}%\n"
+            f"TVOC: {tvoc}\n"
+            f"TVOC Rating: {tvoc_rating}\n"
+            f"eCO2: {eco2}\n"
+            f"eCO2 Rating: {eco2_rating}\n"
+            f"AQI: {aqi}\n\n"
+        )
+
+        time.sleep(10)

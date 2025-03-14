@@ -34,6 +34,7 @@ tasks:
     desc: Deploy code to the ESP32
     deps:
       - deps
+      - lib
     vars:
       USB_PORT:
         # Use the esptool to get the current USB port of the ESP32
@@ -80,6 +81,14 @@ tasks:
     cmds:
       - esptool.py --chip esp32 --baud 460800 write_flash -ez 0x1000 micropython/ESP32_GENERIC-20241129-v1.24.1.bin
 
+  lib:
+    desc: Get the libraries
+    cmds:
+      - task mkdir-lib
+      - task lib-microwebsrv
+      - task lib-bme280
+      - task lib-ens160
+
   mkdir-lib:
     desc: Create the lib directory
     status:
@@ -88,18 +97,38 @@ tasks:
       - mkdir -p src/lib
 
   lib-microwebsrv:
-    desc: Get the latest MicroWebSrv library
+    desc: Get the MicroWebSrv library
+    dir: src/lib
     deps:
       - mkdir-lib
     status:
-      - test -f src/lib/microWebSrv.py
-      - test -f src/lib/microWebSocket.py
-      - test -f src/lib/microWebTemplate.py
-    dir: src/lib
+      - test -f microWebSrv.py
+      - test -f microWebSocket.py
+      - test -f microWebTemplate.py
     cmds:
-      - wget https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebSrv.py
-      - wget https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebSocket.py
-      - wget https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebTemplate.py
+      - wget -qnc https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebSrv.py
+      - wget -qnc https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebSocket.py
+      - wget -qnc https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebTemplate.py
+
+  lib-bme280:
+    desc: Get the BME280 library for ESP32 MicroPython by Rui Santos.
+    dir: src/lib
+    deps:
+      - mkdir-lib
+    status:
+      - test -f BME280.py
+    cmds:
+      - wget -qnc https://raw.githubusercontent.com/RuiSantosdotme/ESP-MicroPython/5f75275fd5b9d4cac1b62bbce058b9771e436f3e/code/WiFi/HTTP_Client_IFTTT_BME280/BME280.py
+
+  lib-ens160:
+    desc: Get the ENS160 library for ESP32 MicroPython by JustDr00py.
+    dir: src/lib
+    deps:
+      - mkdir-lib
+    status:
+      - test -f ens160.py
+    cmds:
+      - wget -qnc https://raw.githubusercontent.com/JustDr00py/ens160-aht21/b7630e692a5e93beb16c6daf451af3fcd094e77c/lib/ens160.py
 
   help:
     desc: Show help
