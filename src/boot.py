@@ -193,7 +193,7 @@ try:
     ntp()  # Only needed if using HTTPS or local timestamp data logging
     # mem_stats()
     # filesystem()  # Detect FAT or littlefs filesystem
-    install_requirements()
+    # install_requirements()
     # print_tree("/")
 
     _melody_boot_success.play()
