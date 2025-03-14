@@ -1,14 +1,14 @@
 GPIO    |  MODE  |  NAME     |  BREADBOARD_ROW
-00      |  PWM   |  BUZZ     |  
-02      |  PWM   |  IQA-LED  |  
-04      |  VSPI  |  CS2      |  ribbon
-05      |  VSPI  |  CS3      |  ribbon
-15      |  VSPI  |  CS1      |  ribbon
-18      |  VSPI  |  SCLK     |  15a
-19      |  VSPI  |  MISO     |  16a
-23      |  VSPI  |  MOSI     |  17a
-25      |  DAC   |  PM10     |  09j
-26      |  DAC   |  PM25     |  09a
+00      |  PWM   |  BUZZ     |  22a
+02      |  PWM   |  IQA-LED  |  24a
+04      |  I2C   |  SCLK     |  11f
+16      |  I2C   |  SDA      |  12g
+17      |  VSPI  |  CS       |  ribbon
+18      |  VSPI  |  SCLK     |  ribbon
+19      |  VSPI  |  MISO     |  ribbon
+21      |  VSPI  |  MOSI     |  ribbon
+25      |  DAC   |  PM10     |  08f
+26      |  DAC   |  PM25     |  08e
 27      |  PWM   |  BATLO    |  26f
 32      |  OUT   |  FAN      |  60e
 33      |  PWM   |  LIGHT    |  59h
