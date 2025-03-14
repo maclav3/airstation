@@ -80,6 +80,27 @@ tasks:
     cmds:
       - esptool.py --chip esp32 --baud 460800 write_flash -ez 0x1000 micropython/ESP32_GENERIC-20241129-v1.24.1.bin
 
+  mkdir-lib:
+    desc: Create the lib directory
+    status:
+      - test -d src/lib
+    cmds:
+      - mkdir -p src/lib
+
+  lib-microwebsrv:
+    desc: Get the latest MicroWebSrv library
+    deps:
+      - mkdir-lib
+    status:
+      - test -f src/lib/microWebSrv.py
+      - test -f src/lib/microWebSocket.py
+      - test -f src/lib/microWebTemplate.py
+    dir: src/lib
+    cmds:
+      - wget https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebSrv.py
+      - wget https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebSocket.py
+      - wget https://raw.githubusercontent.com/jczic/MicroWebSrv/9909b830792d5d06cd1c34dce50985b3291eb0da/microWebTemplate.py
+
   help:
     desc: Show help
     cmds:
