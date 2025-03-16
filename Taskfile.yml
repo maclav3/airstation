@@ -18,12 +18,12 @@ tasks:
   fmt:
     desc: Format code
     cmds:
-      - black ./src
+      - black ./src ./util
 
   check-fmt:
     desc: Check code formatting
     cmds:
-      - black --check ./src
+      - black --check ./src ./util
 
   lint:
     desc: Lint code, excluding the lib directory
@@ -37,13 +37,13 @@ tasks:
       - lib
     vars:
       USB_PORT:
-        # Use the esptool to get the current USB port of the ESP32
-        # Sometimes the port can change when connecting and disconnecting the board
-        sh: esptool.py read_flash_status | grep -oE "/dev/ttyUSB.+?" || (echo "Board not connected" > /dev/stderr && exit 1)
+        # list /dev/ttyUSB* devices. If just one device is connected, it will be selected by default.
+        # otherwise, the user will be prompted to select one via the USB_PORT environment variable.
+        sh: python util/choose_device.py
     cmds:
       # clear the files on the ESP32, excluding the key_store.db
-      # - ampy -p {{.USB_PORT}} run ./src/tree.py
-      - (ampy -p {{.USB_PORT}} ls | grep -v /key_store.db > /tmp/ampy-ls.txt) || true
+      - ampy -p {{.USB_PORT}} run ./src/tree.py
+      - ampy -p {{.USB_PORT}} ls | grep -v /key_store.db > /tmp/ampy-ls.txt
       - cat /tmp/ampy-ls.txt | while read line; do echo $line | tee /dev/stdout | (grep -q "\." && ampy -p {{.USB_PORT}} rm $line || ampy -p {{.USB_PORT}} rmdir $line); done
       - rm /tmp/ampy-ls.txt
 
