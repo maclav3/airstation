@@ -4,6 +4,7 @@ import json
 from devices.ens160 import ENS160_calibrated
 from machine import SoftI2C, Pin
 from lib.BME280 import BME280, BME280_OSAMPLE_2
+from measurements import DataPoint
 
 _pm25norm = 25
 _pm10norm = 50
@@ -135,6 +136,16 @@ if __name__ == "__main__":
             f"eCO2: {eco2}\n"
             f"eCO2 Rating: {eco2_rating}\n"
             f"AQI: {aqi}\n\n"
+        )
+
+        datapoint = DataPoint(
+            timestamp=int(time.time()),
+            temperature=temp,
+            pressure=pressure,
+            relative_humidity=hum,
+            aqi=aqi,
+            tvoc=tvoc,
+            eCO2=eco2,
         )
 
         time.sleep(10)

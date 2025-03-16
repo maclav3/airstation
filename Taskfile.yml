@@ -42,7 +42,7 @@ tasks:
         sh: esptool.py read_flash_status | grep -oE "/dev/ttyUSB.+?" || (echo "Board not connected" > /dev/stderr && exit 1)
     cmds:
       # clear the files on the ESP32, excluding the key_store.db
-      - ampy -p {{.USB_PORT}} run ./src/tree.py
+      # - ampy -p {{.USB_PORT}} run ./src/tree.py
       - (ampy -p {{.USB_PORT}} ls | grep -v /key_store.db > /tmp/ampy-ls.txt) || true
       - cat /tmp/ampy-ls.txt | while read line; do echo $line | tee /dev/stdout | (grep -q "\." && ampy -p {{.USB_PORT}} rm $line || ampy -p {{.USB_PORT}} rmdir $line); done
       - rm /tmp/ampy-ls.txt
