@@ -1,6 +1,8 @@
 import time
 import urequests
 import json
+
+from db import DB
 from devices.ens160 import ENS160_calibrated
 from machine import SoftI2C, Pin
 from lib.BME280 import BME280, BME280_OSAMPLE_2
@@ -105,7 +107,10 @@ if __name__ == "__main__":
     mws = MicroWebSrv(webPath="/www")  # TCP port 80 and files in /www
     mws.Start(threaded=True)  # Starts server in a new thread
 
+    db = DB("/sd/data.csv")
+
     while True:
+        _temp, _pres, _hum = 0., 0., 0.
         try:
             temp, pressure, hum = bme280.temperature, bme280.pressure, bme280.humidity
         except OSError as e:
@@ -113,9 +118,8 @@ if __name__ == "__main__":
             temp, pressure, hum = None, None, None
 
         if temp and hum:
-            # extract the numerical part from "{}.{:02d}C"
             _temp: float = float(temp[:-1])
-            # extract the numerical part from "{}.{:02d}%"
+            _pres: float = float(pressure[:-3])
             _hum = float(hum[:-1])
 
             ens160.set_ambient_temp(_temp)
@@ -140,12 +144,14 @@ if __name__ == "__main__":
 
         datapoint = DataPoint(
             timestamp=int(time.time()),
-            temperature=temp,
-            pressure=pressure,
-            relative_humidity=hum,
-            aqi=aqi,
-            tvoc=tvoc,
-            eCO2=eco2,
+            temperature=_temp,
+            pressure=_pres,
+            relative_humidity=_hum,
+            aqi=int(aqi),
+            tvoc=int(tvoc),
+            eCO2=int(eco2),
         )
 
-        time.sleep(10)
+        db.insert(datapoint)
+
+        time.sleep(30)

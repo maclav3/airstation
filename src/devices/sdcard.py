@@ -4,7 +4,8 @@ from machine import SDCard
 
 _mounted = False
 
-def mount(mount_point: str = '/sd'):
+
+def mount(mount_point: str = "/sd"):
     global _mounted
     if _mounted:
         return
