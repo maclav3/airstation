@@ -45,6 +45,7 @@ import mip
 from machine import reset, WDT
 from sys import exit
 import key_store
+from devices import sdcard
 from tone import Melody, Note, tones
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
@@ -191,7 +192,6 @@ try:
 
     wlan_connect(ssid_name, ssid_pass)
     ntp()  # Only needed if using HTTPS or local timestamp data logging
-    # mem_stats()
     # filesystem()  # Detect FAT or littlefs filesystem
     # install_requirements()
     # print_tree("/")
@@ -202,6 +202,9 @@ try:
     wdt = WDT(
         timeout=86400000
     )  # Watchdog Timer cannot be disabled, so set to expire in 1 day
+
+    sdcard.mount()
+    mem_stats()
 
 except KeyboardInterrupt:
     wdt = WDT(
