@@ -18,19 +18,19 @@ class DB:
             f.write(data.to_csv())
 
     def read(
-        self, from_timestamp: Timestamp or None, to_timestamp: Timestamp or None
+        self, _from: Timestamp = None, _to: Timestamp = None
     ) -> list[DataPoint]:
         """read data points from the database between the given timestamps"""
 
-        if from_timestamp is None:
+        if _from is None:
             _from_offset = DataPoint.HEADER_LENGTH + 1
         else:
-            _from_offset = self._find_timestamp_offset(from_timestamp)
+            _from_offset = self._find_timestamp_offset(_from)
 
-        if to_timestamp is None:
+        if _to is None:
             _to_offset = self._file_size()
         else:
-            _to_offset = self._find_timestamp_offset(to_timestamp)
+            _to_offset = self._find_timestamp_offset(_to)
 
         if _from_offset == -1 or _to_offset == -1:
             return []

@@ -38,7 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(self.db_file))
 
     def test_read_all(self):
-        data = self.db.read(None, None)
+        data = self.db.read()
         self.assertEqual(len(data), self._num_records)
         self.assertEqual(data[0].timestamp, self._start_timestamp)
         self.assertEqual(data[-1].timestamp, self._end_timestamp - self._time_step)
