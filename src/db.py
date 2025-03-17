@@ -18,7 +18,7 @@ class DB:
             f.write(data.to_csv())
 
     def read(
-        self, from_timestamp: Timestamp | None, to_timestamp: Timestamp | None
+        self, from_timestamp: Timestamp or None, to_timestamp: Timestamp or None
     ) -> list[DataPoint]:
         """read data points from the database between the given timestamps"""
 
