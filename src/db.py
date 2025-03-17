@@ -17,9 +17,7 @@ class DB:
         with open(self._path, "a") as f:
             f.write(data.to_csv())
 
-    def read(
-        self, _from: Timestamp = None, _to: Timestamp = None
-    ) -> list[DataPoint]:
+    def read(self, _from: Timestamp = None, _to: Timestamp = None) -> list[DataPoint]:
         """read data points from the database between the given timestamps"""
 
         if _from is None:
@@ -79,7 +77,8 @@ class DB:
 
         return -1
 
-    def _read_timestamp(self, f, offset):
+    @staticmethod
+    def _read_timestamp(f, offset):
         f.seek(offset)
         line = f.readline()
         return DataPoint.from_csv(line).timestamp
