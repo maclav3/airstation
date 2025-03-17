@@ -15,5 +15,5 @@ def mount(mount_point: str = "/sd"):
         os.mount(sd, mount_point)
         _mounted = True
     except Exception as e:
-        print("Failed to mount SD card: %s" % e)
         _mounted = False
+        raise Exception("Failed to mount SD card: %s" % e)

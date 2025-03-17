@@ -110,7 +110,7 @@ if __name__ == "__main__":
     db = DB("/sd/data.csv")
 
     while True:
-        _temp, _pres, _hum = 0., 0., 0.
+        _temp, _pres, _hum = 0.0, 0.0, 0.0
         try:
             temp, pressure, hum = bme280.temperature, bme280.pressure, bme280.humidity
         except OSError as e:

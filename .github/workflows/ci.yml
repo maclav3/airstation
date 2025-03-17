@@ -27,4 +27,5 @@ jobs:
       run: task lint
     - name: Check formatting
       run: task check-fmt
-      
+    - name: Run tests
+      run: task test

@@ -18,17 +18,22 @@ tasks:
   fmt:
     desc: Format code
     cmds:
-      - black ./src ./util
+      - black ./src ./util ./test
 
   check-fmt:
     desc: Check code formatting
     cmds:
-      - black --check ./src ./util
+      - black --check ./src ./util ./test
 
   lint:
     desc: Lint code, excluding the lib directory
     cmds:
       - flake8 --exclude=.venv,lib --ignore=E501
+
+  test:
+    desc: Run tests
+    cmds:
+      - pytest
 
   deploy:
     desc: Deploy code to the ESP32
@@ -48,7 +53,7 @@ tasks:
       - rm /tmp/ampy-ls.txt
 
       # cross-compile all the .py files and prepare the dist directory
-      - find ./src -name '*.py' | grep -v "boot.py" | grep -v "main.py" | xargs -n 1 mpy-cross
+      - find ./src -name '*.py' | grep -v "boot.py" | grep -v "main.py" | grep -v "test_" | xargs -n 1 mpy-cross
       - mkdir -p ./dist && rm -rf ./dist/*
       - find ./src -mindepth 1 -type d | sed 's|src|dist|' | xargs mkdir -p
       - find ./src -name '*.mpy' -print0 | xargs -0 -I {} sh -c 'mkdir -p $(dirname {}) && mv {} $(echo {} | sed "s|src|dist|")'
