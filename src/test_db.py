@@ -6,7 +6,7 @@ from measurements import DataPoint
 from db import DB
 
 
-class MyTestCase(unittest.TestCase):
+class TestDB(unittest.TestCase):
     db_file = mktemp(".csv")
     db = DB(db_file)
 
@@ -18,24 +18,25 @@ class MyTestCase(unittest.TestCase):
 
     _num_records = (_end - _start) // _time_step
 
-    def test_insert(self):
-        for i, t in enumerate(
-            range(int(self._start_timestamp), int(self._end_timestamp), self._time_step)
-        ):
-            timestamp = Timestamp.from_unix_epoch(t)
-            i = i % 100
-            self.db.insert(
-                DataPoint(
-                    timestamp=timestamp,
-                    temperature=i,
-                    pressure=i,
-                    relative_humidity=i,
-                    aqi=1,
-                    tvoc=i,
-                    eCO2=i,
-                )
+    for i, t in enumerate(range(int(_start_timestamp), int(_end_timestamp), _time_step)):
+        timestamp = Timestamp.from_unix_epoch(t)
+        i = i % 100
+        db.insert(
+            DataPoint(
+                timestamp=timestamp,
+                temperature=float(i),
+                pressure=float(i),
+                relative_humidity=float(i),
+                aqi=1,
+                tvoc=i,
+                eCO2=i,
             )
+        )
+
+    def test_insert(self):
         self.assertTrue(os.path.exists(self.db_file))
+        with open(self.db_file, "r") as f:
+            self.assertEqual(len(f.readlines()), self._num_records + 1)
 
     def test_read_all(self):
         data = self.db.read(None, None)

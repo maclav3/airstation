@@ -23,7 +23,7 @@ class Timestamp:
         return Timestamp.from_embedded_epoch(time.time())
 
     def __init__(self, timestamp: int):
-        self.timestamp: int = timestamp
+        self.timestamp: int = int(timestamp)
 
     def __int__(self) -> int:
         return self.timestamp
@@ -35,7 +35,7 @@ class Timestamp:
         return str(self.timestamp)
 
     def __eq__(self, other: "Timestamp") -> bool:
-        return self.timestamp == other.timestamp
+        return isinstance(other, Timestamp) and self.timestamp == other.timestamp
 
     def __lt__(self, other: "Timestamp") -> bool:
         return self.timestamp < other.timestamp
@@ -59,77 +59,152 @@ class Timestamp:
         return hash(self.timestamp)
 
 
-class DataPoint:
-    """DataPoint class represents a data point in a time series.
-    Variables described by DataPoint are:
-    - timestamp: int # unix timestamp
-    - temperature: float # degrees Celsius
-    - pressure: float # hPa
-    - relative_humidity: float # percent
-    - aqi: int # Air Quality Index
-    - tvoc: int # Total Volatile Organic Compounds in ppb
-    - eCO2: int # Equivalent CO2 in ppm
+class DataColumn:
+    def __init__(self, name: str, width: int, initializer, unit=''):
+        self.name = name
+        self.width = width
+        self.initializer = initializer
+        self.unit = unit
 
-    The source for temperature, pressure, and relative humidity is BME280.
-    The source for aqi, tvoc, and eCO2 is ENS160."""
+    def __str__(self):
+        return f"{self.name} ({self.width})"
+
+
+# Supported data columns
+DATA_COLUMN_TIMESTAMP = DataColumn("timestamp", 10, Timestamp)  # unix timestamp
+DATA_COLUMN_TEMPERATURE = DataColumn("temperature", 6, float, '\u00B0C')
+DATA_COLUMN_PRESSURE = DataColumn("pressure", 7, float, 'hPa')
+DATA_COLUMN_RELATIVE_HUMIDITY = DataColumn("relative_humidity", 5, float, '%')
+DATA_COLUMN_AQI = DataColumn("aqi", 1, int)  # Air Quality Index
+DATA_COLUMN_TVOC = DataColumn("tvoc", 4, int, 'ppb')  # Total Volatile Organic Compounds in ppb
+DATA_COLUMN_ECO2 = DataColumn("eCO2", 4, int, 'ppm')  # Equivalent CO2 in ppm
+
+supported_data_columns = [
+    DATA_COLUMN_TIMESTAMP,
+    DATA_COLUMN_TEMPERATURE,
+    DATA_COLUMN_PRESSURE,
+    DATA_COLUMN_RELATIVE_HUMIDITY,
+    DATA_COLUMN_AQI,
+    DATA_COLUMN_TVOC,
+    DATA_COLUMN_ECO2,
+]
+
+
+class DataPoint:
+    """DataPoint class represents a data point in a time series."""
 
     def __init__(self, **kwargs):
-        self.timestamp: Timestamp = kwargs.get("timestamp")
-        self.temperature: float = kwargs.get("temperature")
-        self.pressure: float = kwargs.get("pressure")
-        self.relative_humidity: float = kwargs.get("relative_humidity")
-        self.aqi: int = kwargs.get("aqi")
-        self.tvoc: int = kwargs.get("tvoc")
-        self.eCO2: int = kwargs.get("eCO2")
+        self.columns: list[DataColumn] = []
+        col_names = [col.name for col in supported_data_columns]
+
+        for k, v in kwargs.items():
+            if k not in col_names:
+                raise ValueError(f"Unsupported column: {k}")
+            data_column = next((dc for dc in supported_data_columns if dc.name == k), None)
+            if not isinstance(v, data_column.initializer):
+                raise ValueError(f"Invalid type for {k}: {type(v)}")
+            setattr(self, k, v)
+            self.columns.append(data_column)
+
+        if not hasattr(self, "timestamp"):
+            raise ValueError("Missing timestamp")
 
     def __str__(self) -> str:
-        return f"{self.timestamp}: T={self.temperature}°C, P={self.pressure}hPa, RH={self.relative_humidity}%, AQI={self.aqi}, TVOC={self.tvoc}ppb, eCO2={self.eCO2}ppm"
+        s = f"DataPoint({self.timestamp}"
+        for column in supported_data_columns:
+            if hasattr(self, column.name):
+                s += f", {column.name}={getattr(self, column.name)} {column.unit}"
 
     def __repr__(self) -> str:
         return self.__str__()
 
-    CSV_HEADER: str = "timestamp,temperature,pressure,relative_humidity,aqi,tvoc,eCO2\n"
-    HEADER_LENGTH: int = len(CSV_HEADER)
-    RECORD_LENGTH: int = len("1742195260,-12.34,1234.56,12.34,1,1234,1234\n")
-
     def to_dict(self) -> dict:
-        return {
-            "timestamp": self.timestamp,
-            "temperature": self.temperature,
-            "pressure": self.pressure,
-            "relative_humidity": self.relative_humidity,
-            "aqi": self.aqi,
-            "tvoc": self.tvoc,
-            "eCO2": self.eCO2,
+        _dict = {
+            "timestamp": self.timestamp
         }
+
+        for column in supported_data_columns:
+            if hasattr(self, column.name):
+                _dict[column.name] = getattr(self, column.name)
+
+        return _dict
 
     @staticmethod
     def from_dict(data: dict) -> "DataPoint":
-        return DataPoint(
-            timestamp=data["timestamp"],
-            temperature=data["temperature"],
-            pressure=data["pressure"],
-            relative_humidity=data["relative_humidity"],
-            aqi=data["aqi"],
-            tvoc=data["tvoc"],
-            eCO2=data["eCO2"],
-        )
+        return DataPoint(**data)
 
-    def to_csv(self) -> str:
-        # make sure the csv has a constant width in bytes
-        return f"{int(self.timestamp):10d},{self.temperature:-6.2f},{self.pressure:7.2f},{self.relative_humidity:5.2f},{self.aqi:1d},{self.tvoc:4d},{self.eCO2:4d}\n"
+    def to_csv(self, columns: list[DataColumn] = None) -> str:
+        # pad the timestamp to supported_data_columns["timestamp"].width
+        _csv = str(self.timestamp).rjust(DATA_COLUMN_TIMESTAMP.width)
+
+        for column in supported_data_columns:
+            if column == DATA_COLUMN_TIMESTAMP:
+                continue
+            if columns and column not in columns:
+                continue
+            if hasattr(self, column.name):
+                _value = str(getattr(self, column.name))
+                _value = _value.rjust(column.width)
+                _csv += f",{_value}"
+
+        return _csv + "\n"
 
     @staticmethod
-    def from_csv(data: str) -> "DataPoint":
-        timestamp, temperature, pressure, relative_humidity, aqi, tvoc, eCO2 = (
-            data.split(",")
-        )
-        return DataPoint(
-            timestamp=Timestamp.from_str(timestamp),
-            temperature=float(temperature),
-            pressure=float(pressure),
-            relative_humidity=float(relative_humidity),
-            aqi=int(aqi),
-            tvoc=int(tvoc),
-            eCO2=int(eCO2),
-        )
+    def from_csv(data: str, header: str) -> "DataPoint":
+        _columns = header.strip().split(",")
+        _values = data.strip().split(",")
+
+        _data = {}
+        for i, column in enumerate(supported_data_columns):
+            if not column.name in _columns:
+                continue
+            _data[column.name] = column.initializer(_values[i])
+
+        return DataPoint(**_data)
+
+
+class DataSeries:
+    def __init__(self, columns: list[DataColumn], data: list[DataPoint]):
+        self.columns = columns
+        self.data = data
+
+    def csv_header(self, columns: list[DataColumn] = None) -> str:
+        _output_columns = self.columns
+        if columns:
+            _output_columns = columns
+
+        return ','.join([column.name for column in _output_columns]) +  "\n"
+
+    def header_length(self) -> int:
+        return len(self.csv_header())
+
+    def record_length(self) -> int:
+        _length = 0
+        for column in self.columns:
+            _length += column.width + 1
+        return _length + 1
+
+    def with_columns(self, columns: list[DataColumn]) -> "DataSeries":
+        return DataSeries(columns, self.data)
+
+    def append(self, data: DataPoint):
+        if not isinstance(data, DataPoint):
+            raise ValueError("Invalid data type")
+        if data.columns != self.columns:
+            raise ValueError("Data columns do not match")
+        self.data.append(data)
+
+    def to_csv(self, columns: list[DataColumn] = None) -> str:
+        if not columns:
+            columns = self.columns
+
+        _csv = self.csv_header(columns)
+        for dp in self.data:
+            _csv += dp.to_csv(columns)
+        return _csv
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __getitem__(self, key: int) -> DataPoint:
+        return self.data[key]
