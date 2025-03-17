@@ -18,12 +18,12 @@ tasks:
   fmt:
     desc: Format code
     cmds:
-      - black ./src ./util ./test
+      - black ./src ./util
 
   check-fmt:
     desc: Check code formatting
     cmds:
-      - black --check ./src ./util ./test
+      - black --check ./src ./util
 
   lint:
     desc: Lint code, excluding the lib directory
