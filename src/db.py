@@ -1,4 +1,4 @@
-from measurements import DataPoint
+from measurements import DataPoint, Timestamp
 import os
 
 
@@ -18,7 +18,7 @@ class DB:
             f.write(data.to_csv())
 
     def read(
-        self, from_timestamp: int | None, to_timestamp: int | None
+        self, from_timestamp: Timestamp | None, to_timestamp: Timestamp | None
     ) -> list[DataPoint]:
         """read data points from the database between the given timestamps"""
 
@@ -48,27 +48,41 @@ class DB:
     def _file_size(self) -> int:
         return os.stat(self._path).st_size
 
-    def _find_timestamp_offset(self, timestamp: int) -> int:
+    def _find_timestamp_offset(self, look_for: Timestamp) -> int:
         """find the offset of the line with the given timestamp using binary search"""
         _low = DataPoint.HEADER_LENGTH
         _high = self._file_size()
 
         with open(self._path, "r") as f:
+            _last = self._read_timestamp(f, _high - DataPoint.RECORD_LENGTH)
+            if look_for >= _last:
+                return _high
+
+            _first = self._read_timestamp(f, DataPoint.HEADER_LENGTH)
+            if look_for <= _first:
+                return DataPoint.HEADER_LENGTH
+
+            # rewind to first record
+            f.seek(DataPoint.HEADER_LENGTH)
+
             while _low < _high:
                 _mid = (_low + _high) // 2
                 _mid = _align_to_record(_mid)
-                f.seek(_mid)
 
-                _line = f.readline()
-                dp = DataPoint.from_csv(_line)
-                if dp.timestamp == timestamp or _high - _low < DataPoint.RECORD_LENGTH:
-                    return _mid + DataPoint.RECORD_LENGTH
-                elif dp.timestamp < timestamp:
+                ts = self._read_timestamp(f, _mid)
+                if ts == look_for or _high - _low < DataPoint.RECORD_LENGTH:
+                    return _mid
+                elif ts < look_for:
                     _low = _mid + 1
                 else:
                     _high = _mid - 1
 
         return -1
+
+    def _read_timestamp(self, f, offset):
+        f.seek(offset)
+        line = f.readline()
+        return DataPoint.from_csv(line).timestamp
 
 
 def _align_to_record(_offset: int) -> int:

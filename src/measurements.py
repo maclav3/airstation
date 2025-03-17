@@ -1,3 +1,64 @@
+import time
+
+# Timestamps returned by esp32 are in Embedded Epoch Time (seconds since 2000-01-01 00:00:00 UTC) as opposed to
+# Unix/POSIX Epoch Time (seconds since 1970-01-01 00:00:00 UTC).
+_epoch_offset = 946684800
+
+
+class Timestamp:
+    @staticmethod
+    def from_embedded_epoch(timestamp: int) -> "Timestamp":
+        return Timestamp(timestamp + _epoch_offset)
+
+    @staticmethod
+    def from_str(timestamp: str) -> "Timestamp":
+        return Timestamp(int(timestamp))
+
+    @staticmethod
+    def from_unix_epoch(timestamp: int) -> "Timestamp":
+        return Timestamp(timestamp)
+
+    @staticmethod
+    def now() -> "Timestamp":
+        return Timestamp.from_embedded_epoch(time.time())
+
+    def __init__(self, timestamp: int):
+        self.timestamp: int = timestamp
+
+    def __int__(self) -> int:
+        return self.timestamp
+
+    def __str__(self) -> str:
+        return str(self.timestamp)
+
+    def __repr__(self) -> str:
+        return str(self.timestamp)
+
+    def __eq__(self, other: "Timestamp") -> bool:
+        return self.timestamp == other.timestamp
+
+    def __lt__(self, other: "Timestamp") -> bool:
+        return self.timestamp < other.timestamp
+
+    def __le__(self, other: "Timestamp") -> bool:
+        return self.timestamp <= other.timestamp
+
+    def __gt__(self, other: "Timestamp") -> bool:
+        return self.timestamp > other.timestamp
+
+    def __ge__(self, other: "Timestamp") -> bool:
+        return self.timestamp >= other.timestamp
+
+    def __add__(self, other: int or "Timestamp") -> "Timestamp":
+        return Timestamp.from_unix_epoch(self.timestamp + int(other))
+
+    def __sub__(self, other: int or "Timestamp") -> "Timestamp":
+        return Timestamp.from_unix_epoch(self.timestamp - int(other))
+
+    def __hash__(self) -> int:
+        return hash(self.timestamp)
+
+
 class DataPoint:
     """DataPoint class represents a data point in a time series.
     Variables described by DataPoint are:
@@ -13,8 +74,8 @@ class DataPoint:
     The source for aqi, tvoc, and eCO2 is ENS160."""
 
     def __init__(self, **kwargs):
-        self.timestamp: int | None = kwargs.get("timestamp")
-        self.temperature: float | None = kwargs.get("temperature")
+        self.timestamp: Timestamp = kwargs.get("timestamp")
+        self.temperature: float = kwargs.get("temperature")
         self.pressure: float = kwargs.get("pressure")
         self.relative_humidity: float = kwargs.get("relative_humidity")
         self.aqi: int = kwargs.get("aqi")
@@ -29,7 +90,7 @@ class DataPoint:
 
     CSV_HEADER: str = "timestamp,temperature,pressure,relative_humidity,aqi,tvoc,eCO2\n"
     HEADER_LENGTH: int = len(CSV_HEADER)
-    RECORD_LENGTH: int = len("1234567890,-12.34,1234.56,12.34,1,1234,1234\n")
+    RECORD_LENGTH: int = len("1742195260,-12.34,1234.56,12.34,1,1234,1234\n")
 
     def to_dict(self) -> dict:
         return {
@@ -56,7 +117,7 @@ class DataPoint:
 
     def to_csv(self) -> str:
         # make sure the csv has a constant width in bytes
-        return f"{self.timestamp:10d},{self.temperature:-6.2f},{self.pressure:7.2f},{self.relative_humidity:5.2f},{self.aqi:1d},{self.tvoc:4d},{self.eCO2:4d}\n"
+        return f"{int(self.timestamp):10d},{self.temperature:-6.2f},{self.pressure:7.2f},{self.relative_humidity:5.2f},{self.aqi:1d},{self.tvoc:4d},{self.eCO2:4d}\n"
 
     @staticmethod
     def from_csv(data: str) -> "DataPoint":
@@ -64,7 +125,7 @@ class DataPoint:
             data.split(",")
         )
         return DataPoint(
-            timestamp=int(timestamp),
+            timestamp=Timestamp.from_str(timestamp),
             temperature=float(temperature),
             pressure=float(pressure),
             relative_humidity=float(relative_humidity),
