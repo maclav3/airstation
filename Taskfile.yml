@@ -93,8 +93,6 @@ tasks:
       - task lib-microwebsrv
       - task lib-bme280
       - task lib-ens160
-      - task mkdir-js-lib
-      - task lib-js-dygraph
 
   mkdir-lib:
     desc: Create the lib directory
@@ -136,26 +134,6 @@ tasks:
       - test -f ens160.py
     cmds:
       - wget -qnc https://raw.githubusercontent.com/JustDr00py/ens160-aht21/b7630e692a5e93beb16c6daf451af3fcd094e77c/lib/ens160.py
-
-  mkdir-js-lib:
-    desc: Create the www/lib directory
-    status:
-      - test -d www/lib
-    cmds:
-      - mkdir -p www/lib
-
-  lib-js-dygraph:
-    desc: Get the Dygraph library
-    deps:
-      - mkdir-js-lib
-    dir: www/lib
-    status:
-      - test -f dygraph.js
-      - test -f dygraph.css
-    cmds:
-      - wget -qnc https://dygraphs.com/2.2.0/dist/dygraph.js
-      - wget -qnc https://dygraphs.com/2.2.0/dist/dygraph.css
-      - wget -qnc https://dygraphs.com/2.2.0/dist/extras/crosshair.js
 
   help:
     desc: Show help

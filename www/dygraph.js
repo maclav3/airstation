@@ -55,12 +55,16 @@ Dygraph.onDOMready(function onDOMready() {
       for (var i = 0; i < 6; i++) {
         var graphDefinition = graphDefinitions[dataSeries[i]];
         var div = document.getElementById(graphDefinition.div);
+        var last_time = graphDefinition.data[graphDefinition.data.length - 1][0];
+        var dateWindow = [moment(last_time).subtract(1, 'day').toDate(), last_time];
+        
         graphs.push(new Dygraph(
           div,
           graphDefinition.data,
           {
             connectSeparatedPoints: false,
             gapSize: 1,
+            dateWindow: dateWindow,
             drawGapEdgePoints: true,
             plugins: [
                 new Dygraph.Plugins.Crosshair({
