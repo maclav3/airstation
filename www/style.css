@@ -1,0 +1,12 @@
+div.chart {
+    width: 90%;
+    height: 300px;
+    margin: 10px;
+    margin-bottom: 100px;
+}
+
+body {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+}

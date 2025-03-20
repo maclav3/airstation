@@ -29,10 +29,11 @@ class Timestamp:
         return self.timestamp
 
     def __str__(self) -> str:
-        return str(self.timestamp)
+        t = time.localtime(self.timestamp)
+        return "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(*t[:6])
 
     def __repr__(self) -> str:
-        return str(self.timestamp)
+        return str(self)
 
     def __eq__(self, other: "Timestamp") -> bool:
         return self.timestamp == other.timestamp
