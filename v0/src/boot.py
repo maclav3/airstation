@@ -45,6 +45,7 @@ import mip
 from machine import reset, WDT
 from sys import exit
 import key_store
+from devices import sdcard
 from tone import Melody, Note, tones
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
@@ -202,7 +203,7 @@ try:
         timeout=86400000
     )  # Watchdog Timer cannot be disabled, so set to expire in 1 day
 
-    # sdcard.mount()
+    sdcard.mount()
     mem_stats()
 
 except KeyboardInterrupt:
