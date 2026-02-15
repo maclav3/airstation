@@ -33,7 +33,7 @@ tasks:
   test:
     desc: Run tests
     cmds:
-      - pytest
+      - pytest || ([[ $? -eq 5 ]]) # exit code 5 means no tests, which is ok for now
 
   deploy:
     desc: Deploy code to the ESP32
