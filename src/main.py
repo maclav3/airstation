@@ -11,6 +11,7 @@ from machine import SoftI2C, Pin, PWM, deepsleep
 import pulse
 from api_sensordata import SensorStation, get_sensor_community_data
 from lib.lib_lcd1602_2004_with_i2c import LCD
+
 # from show_time import show_time
 
 button_highlight_pin = PWM(Pin(23, Pin.OUT))
@@ -19,6 +20,7 @@ pulse_task = None
 
 i2c = SoftI2C(scl=Pin(22), sda=Pin(21))
 lcd = LCD(i2c)
+
 
 async def cycle_stations():
     with open("../config.json") as f:
@@ -40,11 +42,13 @@ async def cycle_stations():
             lcd.puts(to_lcd[1], y=1)
             await asyncio.sleep(4)
 
+
 def flash_battery_critical():
     for i in range(20):
         battery.toggle_battery_light(on=True, bright=(i % 2 == 0))
         time.sleep(0.1)
     battery.toggle_battery_light(on=False)
+
 
 def shutdown():
     print("going to deep sleep")
@@ -53,7 +57,8 @@ def shutdown():
     battery.toggle_battery_light(False)
 
     global pulse_task
-    if pulse_task: pulse_task.cancel()
+    if pulse_task:
+        pulse_task.cancel()
     asyncio.sleep_ms(10)
 
     # The button should connect Pin 4 to GND.
@@ -63,6 +68,7 @@ def shutdown():
     print("deep sleep!")
     deepsleep()
     exit()
+
 
 async def show_info():
     # show_time(lcd)
@@ -84,7 +90,7 @@ if __name__ == "__main__":
     lcd.clear()
     if 0.5 < battery_voltage <= 3.4:
         print("Battery low!")
-        battery.toggle_battery_light(on=True, bright=False) # on until shutdown
+        battery.toggle_battery_light(on=True, bright=False)  # on until shutdown
     if battery_voltage == 0:
         print("Battery off, probably running off USB cable")
     else:
@@ -96,4 +102,3 @@ if __name__ == "__main__":
     pulse_task = asyncio.create_task(pulse.pulse_task(button_highlight_pin))
     asyncio.create_task(show_info())
     asyncio.get_event_loop().run_forever()
-

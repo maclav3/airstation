@@ -5,6 +5,7 @@ from machine import PWM
 
 sine = [(math.sin(i / 50 * 2 * math.pi) + 1) / 2 for i in range(200)]
 
+
 async def pulse_task(button_highlight_pin: PWM):
     print("Starting LED pulse...")
     while True:

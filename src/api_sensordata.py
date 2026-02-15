@@ -3,6 +3,7 @@ import urequests
 _pm25norm = 25
 _pm10norm = 50
 
+
 class SensorData:
     def __init__(self, **kwargs):
         self.pm10: float | None = kwargs.get("pm10", None)
@@ -23,14 +24,15 @@ class SensorData:
         return s
 
     "to_lcd renders the data as two rows that can be displayed on a 16x2 LCD"
+
     def to_lcd(self) -> tuple[str, str]:
         # P25|999ugm3|500%
         # P10|999ugm3|500%
         pm25percent = int(self.pm25 / _pm25norm * 100)
         p10percent = int(self.pm10 / _pm10norm * 100)
 
-        pm25percent = "{:03d}".format(pm25percent) if pm25percent < 1000 else '!!!'
-        p10percent = "{:03d}".format(p10percent) if p10percent < 1000 else '!!!'
+        pm25percent = "{:03d}".format(pm25percent) if pm25percent < 1000 else "!!!"
+        p10percent = "{:03d}".format(p10percent) if p10percent < 1000 else "!!!"
 
         p25 = "P25|{:03d}ugm3|{}%".format(int(self.pm25), pm25percent)
         p10 = "P10|{:03d}ugm3|{}%".format(int(self.pm10), p10percent)

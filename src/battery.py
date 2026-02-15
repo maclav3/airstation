@@ -8,7 +8,8 @@ from lib.lib_lcd1602_2004_with_i2c import LCD
 _battery_low = PWM(Pin(15, Pin.OUT))
 _battery_low.freq(1000)
 
-_battery_adc = ADC(Pin(34, Pin.IN), atten = ADC.ATTN_11DB)
+_battery_adc = ADC(Pin(34, Pin.IN), atten=ADC.ATTN_11DB)
+
 
 def _get_battery_voltage() -> float:
     # Take multiple samples to smooth out noise
@@ -18,7 +19,7 @@ def _get_battery_voltage() -> float:
         time.sleep_ms(2)
 
     # 4.10 V = 36888
-    avg = (sum(measurements) / len(measurements))
+    avg = sum(measurements) / len(measurements)
     voltage = avg * 4.10 / 36888
 
     return voltage
@@ -32,8 +33,9 @@ def check_battery() -> tuple[float, float]:
 
     return voltage, percentage
 
+
 def toggle_battery_light(on: bool, bright: bool = False):
-    duty = int(65535/2) if bright else int(65535/5)
+    duty = int(65535 / 2) if bright else int(65535 / 5)
     duty = duty if on else 0
 
     _battery_low.duty_u16(duty)

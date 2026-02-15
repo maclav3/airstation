@@ -51,7 +51,6 @@ from tone import Melody, Note, tones
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
 from micropython import alloc_emergency_exception_buf
 
-
 # print()
 # print("=" * 45)
 # print("boot.py: Press CTRL+C to enter REPL...")
