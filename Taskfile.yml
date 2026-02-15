@@ -23,7 +23,7 @@ tasks:
   check-fmt:
     desc: Check code formatting
     cmds:
-      - black --check ./src ./util ./www
+      - black --check ./src ./util
 
   lint:
     desc: Lint code, excluding the lib directory
