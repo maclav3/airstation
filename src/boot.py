@@ -42,7 +42,7 @@
 
 import utime
 import mip
-from machine import reset, WDT, SoftI2C, Pin, PWM
+from machine import reset, WDT, SoftI2C, Pin
 from sys import exit
 import key_store
 from lib.lib_lcd1602_2004_with_i2c import LCD

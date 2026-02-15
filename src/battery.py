@@ -1,8 +1,6 @@
-import asyncio
 import time
 
 from machine import Pin, PWM, ADC
-from lib.lib_lcd1602_2004_with_i2c import LCD
 
 # LED indicator to light up when the battery is low or critical
 _battery_low = PWM(Pin(15, Pin.OUT))

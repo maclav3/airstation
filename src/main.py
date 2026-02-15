@@ -31,7 +31,7 @@ async def cycle_stations():
         if station.type == "sensor.community":
             lcd.clear()
             lcd.puts(station.name, y=0)
-            lcd.puts("Loading...".format(int(battery.check_battery()[1])), y=1)
+            lcd.puts("Loading...", y=1)
 
             data = await get_sensor_community_data(station)
             print(data)
@@ -56,7 +56,6 @@ def shutdown():
     lcd.backlight(False)
     battery.toggle_battery_light(False)
 
-    global pulse_task
     if pulse_task:
         pulse_task.cancel()
     asyncio.sleep_ms(10)
