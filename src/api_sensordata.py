@@ -47,7 +47,7 @@ class SensorStation:
         return f"{self.name} ({self.id})"
 
 
-def get_sensor_community_data(station: SensorStation) -> SensorData:
+async def get_sensor_community_data(station: SensorStation) -> SensorData:
     print("Getting sensor community data from station %s" % station)
     response = urequests.get(
         f"https://data.sensor.community/airrohr/v1/sensor/{station.id}/"

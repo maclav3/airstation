@@ -42,21 +42,22 @@
 
 import utime
 import mip
-from machine import reset, WDT
+from machine import reset, WDT, SoftI2C, Pin, PWM
 from sys import exit
 import key_store
+from lib.lib_lcd1602_2004_with_i2c import LCD
 from tone import Melody, Note, tones
 
 # Create exceptions (feedback) in cases where normal RAM allocation fails (e.g. interrupts)
 from micropython import alloc_emergency_exception_buf
 
 
-print()
-print("=" * 45)
-print("boot.py: Press CTRL+C to enter REPL...")
-print()
-
-utime.sleep(2)  # A chance to hit Ctrl+C in REPL
+# print()
+# print("=" * 45)
+# print("boot.py: Press CTRL+C to enter REPL...")
+# print()
+#
+# utime.sleep(1)  # A chance to hit Ctrl+C in REPL
 alloc_emergency_exception_buf(100)
 wdt = WDT(
     timeout=300000
@@ -183,27 +184,33 @@ _melody_boot_failure = Melody(
 
 # Run selected functions at boot
 try:
-    _melody_boot_start.play()
-
-    no_debug()
+    _indicator = Pin(15, Pin.OUT)
+    # _melody_boot_start.play()
+    # no_debug()
     ssid_name = key_store.get("ssid_name")
     ssid_pass = key_store.get("ssid_pass")
 
     wlan_connect(ssid_name, ssid_pass)
-    ntp()  # Only needed if using HTTPS or local timestamp data logging
+    # ntp()  # Only needed if using HTTPS or local timestamp data logging
     # filesystem()  # Detect FAT or littlefs filesystem
     # install_requirements()
     # print_tree("/")
 
-    _melody_boot_success.play()
+    # _melody_boot_success.play()
     # TODO: this can be removed when the loop function in main.py is implemented
     # It will feed the timer then, for now – to avoid the irritating watchdog reset – bump the timer to 1 day
-    wdt = WDT(
-        timeout=86400000
-    )  # Watchdog Timer cannot be disabled, so set to expire in 1 day
+    # wdt = WDT(
+    #     timeout=86400000
+    # )  # Watchdog Timer cannot be disabled, so set to expire in 1 day
+
+    # backlight off to conserve power
+    i2c = SoftI2C(scl=Pin(22), sda=Pin(21))
+    lcd = LCD(i2c)
+    lcd.backlight(False)
+    _indicator.value(0)
 
     # sdcard.mount()
-    mem_stats()
+    # mem_stats()
 
 except KeyboardInterrupt:
     wdt = WDT(
